@@ -4,7 +4,7 @@ import (
 	"os"
 
 	flag "github.com/spf13/pflag"
-	"github.com/txzdream/websocket-echo-server_end/server"
+	server "github.com/sysu-saad-project/service-end/core/service"
 )
 
 func main() {
