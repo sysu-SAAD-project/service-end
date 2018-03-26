@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	dbservice "github.com/sysu-saad-project/service-end/core/models/service"
+	dbservice "github.com/sysu-saad-project/service-end/models/service"
 )
 
 // ShowActivitiesListHandler get required page number and return detailed activity list
@@ -26,27 +26,29 @@ func ShowActivitiesListHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get activity list and transfer it to json
 	activityList := dbservice.GetActivityList(intPageNum - 1)
-	returnList := ActivityList{
-		Content:          activityList,
-		Last:             true,
-		TotalPages:       1,
-		TotalElements:    len(activityList),
-		NumberOfElements: len(activityList),
-		First:            intPageNum == 1,
-		Sort: []SortRule{SortRule{
-			Direction:    "DESC",
-			Property:     "id",
-			IgnoreCase:   false,
-			NullHandling: "NATIVE",
-			Ascending:    false,
-			Descending:   true,
-		}},
+	if len(activityList) > 0 {
+		returnList := ActivityList{
+			Content:          activityList,
+			Last:             true,
+			TotalPages:       1,
+			TotalElements:    len(activityList),
+			NumberOfElements: len(activityList),
+			First:            intPageNum == 1,
+			Sort: []SortRule{SortRule{
+				Direction:    "DESC",
+				Property:     "id",
+				IgnoreCase:   false,
+				NullHandling: "NATIVE",
+				Ascending:    false,
+				Descending:   true,
+			}},
+		}
+		stringList, err := json.Marshal(returnList)
+		if err != nil {
+			panic(err)
+		}
+		w.Write(stringList)
 	}
-	stringList, err := json.Marshal(returnList)
-	if err != nil {
-		panic(err)
-	}
-	w.Write(stringList)
 }
 
 // ShowActivityDetailHandler return required activity details with given activity id
@@ -58,10 +60,12 @@ func ShowActivityDetailHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	activityInfo := dbservice.GetActivityInfo(intID)
-	stringInfo, err := json.Marshal(activityInfo)
-	if err != nil {
-		panic(err)
+	ok, activityInfo := dbservice.GetActivityInfo(intID)
+	if ok {
+		stringInfo, err := json.Marshal(activityInfo)
+		if err != nil {
+			panic(err)
+		}
+		w.Write(stringInfo)
 	}
-	w.Write(stringInfo)
 }

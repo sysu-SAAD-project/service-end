@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/sysu-saad-project/service-end/core/models/entities"
+	"github.com/sysu-saad-project/service-end/models/entities"
 )
 
 // SortRule defines the rule of sorting

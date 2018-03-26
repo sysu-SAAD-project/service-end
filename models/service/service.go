@@ -1,11 +1,11 @@
 package service
 
 import (
-	"github.com/sysu-saad-project/service-end/core/models/entities"
+	"github.com/sysu-saad-project/service-end/models/entities"
 )
 
 // GetActivityList return wanted activity list with given page number
-func GetActivityList(pageNum int) []entities.ActivityInfo {
+func GetActivityList(pageNum int) ([]entities.ActivityInfo) {
 	activityList := make([]entities.ActivityInfo, 0)
 	// Search verified activity
 	// 0 stands for no pass
@@ -16,9 +16,9 @@ func GetActivityList(pageNum int) []entities.ActivityInfo {
 }
 
 // GetActivityInfo return wanted activity detail information which is given by id
-func GetActivityInfo(id int) entities.ActivityInfo {
+func GetActivityInfo(id int) (bool, entities.ActivityInfo) {
 	var activity entities.ActivityInfo
 
-	entities.Engine.ID(id).Get(&activity)
-	return activity
+	ok, _ := entities.Engine.ID(id).Get(&activity)
+	return ok, activity
 }
