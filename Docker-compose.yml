@@ -1,0 +1,20 @@
+# mysql listening on port 3306
+# redis listening on port 6379
+# service-end listening on port 8080
+redis:
+  image: redis
+  volumes:
+    - /data/redits:/data
+
+mysql:
+  image: mysql:5.6
+  enironment:
+    - MYSQL_ROOT_PASSWORD=verysecret
+  volumes:
+    - /data/mysql:/var/lib/mysql
+
+service-end:
+  build: .
+  links:
+    - redis
+    - mysql

@@ -4,6 +4,7 @@ import (
 	"os"
 
 	flag "github.com/spf13/pflag"
+	server "github.com/sysu-saad-project/service-end/core/service"
 )
 
 func main() {
