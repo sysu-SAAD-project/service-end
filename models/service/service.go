@@ -11,7 +11,7 @@ func GetActivityList(pageNum int) ([]entities.ActivityInfo) {
 	// 0 stands for no pass
 	// 1 stands for pass
 	// 2 stands for not yet verified
-	entities.Engine.Find(&activityList)
+	entities.Engine.Desc("id").Limit(10, pageNum * 10).Where("activity.valid=1").Find(&activityList)
 	return activityList
 }
 

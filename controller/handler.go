@@ -26,27 +26,16 @@ func ShowActivitiesListHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get activity list and transfer it to json
 	activityList := dbservice.GetActivityList(intPageNum - 1)
-	if len(activityList) > 0 {
-		returnList := ActivityList{
-			Content:          activityList,
-			Last:             true,
-			TotalPages:       1,
-			TotalElements:    len(activityList),
-			NumberOfElements: len(activityList),
-			First:            intPageNum == 1,
-			Sort: []SortRule{SortRule{
-				Direction:    "DESC",
-				Property:     "id",
-				IgnoreCase:   false,
-				NullHandling: "NATIVE",
-				Ascending:    false,
-				Descending:   true,
-			}},
-		}
-		stringList, err := json.Marshal(returnList)
-		if err != nil {
-			panic(err)
-		}
+	returnList := ActivityList{
+		Content: activityList,
+	}
+	stringList, err := json.Marshal(returnList)
+	if err != nil {
+		panic(err)
+	}
+	if len(activityList) <= 0 {
+		w.WriteHeader(204)
+	} else {
 		w.Write(stringList)
 	}
 }
@@ -67,5 +56,7 @@ func ShowActivityDetailHandler(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 		w.Write(stringInfo)
+	} else {
+		w.WriteHeader(204)
 	}
 }
