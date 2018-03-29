@@ -8,16 +8,7 @@ WORKDIR /go/src/service-end
 # Copy source code
 COPY . /go/src/service-end
 
-# Download dependencies
-RUN go get -u github.com/spf13/pflag
-#RUN go get -u github.com/sysu-saad-project/service-end/core/service
-RUN go get -u github.com/gorilla/mux
-RUN go get -u github.com/gorilla/websocket
-RUN go get -u github.com/urfave/negroni
-RUN go get -u github.com/go-sql-driver/mysql
-RUN go get -u github.com/go-xorm/xorm
-RUN go-wrapper download
-RUN go-wrapper install
+RUN go-wrapper download && go-wrapper install
 
 # Setting ENV Value
 ENV PORT 8080
