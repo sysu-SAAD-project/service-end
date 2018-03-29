@@ -2,7 +2,9 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -21,22 +23,30 @@ func ShowActivitiesListHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	intPageNum, err := strconv.Atoi(pageNumber)
 	if err != nil {
-		panic(err)
+		fmt.Fprint(os.Stderr, err)
+		w.WriteHeader(400)
+		return
 	}
 
-	// Get activity list and transfer it to json
-	activityList := dbservice.GetActivityList(intPageNum - 1)
-	returnList := ActivityList{
-		Content: activityList,
-	}
-	stringList, err := json.Marshal(returnList)
-	if err != nil {
-		panic(err)
-	}
-	if len(activityList) <= 0 {
-		w.WriteHeader(204)
+	if intPageNum > 0 {
+		// Get activity list and transfer it to json
+		activityList := dbservice.GetActivityList(intPageNum - 1)
+		returnList := ActivityList{
+			Content: activityList,
+		}
+		stringList, err := json.Marshal(returnList)
+		if err != nil {
+			fmt.Fprint(os.Stderr, err)
+			w.WriteHeader(500)
+			return
+		}
+		if len(activityList) <= 0 {
+			w.WriteHeader(204)
+		} else {
+			w.Write(stringList)
+		}
 	} else {
-		w.Write(stringList)
+		w.WriteHeader(400)
 	}
 }
 
@@ -46,17 +56,25 @@ func ShowActivityDetailHandler(w http.ResponseWriter, r *http.Request) {
 	id := vars["id"]
 	intID, err := strconv.Atoi(id)
 	if err != nil {
-		panic(err)
+		fmt.Fprint(os.Stderr, err)
+		w.WriteHeader(400)
+		return
 	}
 
-	ok, activityInfo := dbservice.GetActivityInfo(intID)
-	if ok {
-		stringInfo, err := json.Marshal(activityInfo)
-		if err != nil {
-			panic(err)
+	if intID > 0 {
+		ok, activityInfo := dbservice.GetActivityInfo(intID)
+		if ok {
+			stringInfo, err := json.Marshal(activityInfo)
+			if err != nil {
+				fmt.Fprint(os.Stderr, err)
+				w.WriteHeader(500)
+				return
+			}
+			w.Write(stringInfo)
+		} else {
+			w.WriteHeader(204)
 		}
-		w.Write(stringInfo)
 	} else {
-		w.WriteHeader(204)
+		w.WriteHeader(400)
 	}
 }

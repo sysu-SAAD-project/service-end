@@ -22,7 +22,7 @@ func GetServer() *negroni.Negroni {
 	act := r.PathPrefix("/act").Subrouter()
 	act.HandleFunc("", controller.ShowActivitiesListHandler).Methods("GET")
 	act.HandleFunc("/", controller.ShowActivitiesListHandler).Methods("GET")
-	act.HandleFunc("/{id:[0-9]+}", controller.ShowActivityDetailHandler).Methods("GET")
+	act.HandleFunc("/{id}", controller.ShowActivityDetailHandler).Methods("GET")
 
 	// Use classic server and return it
 	s := negroni.Classic()
