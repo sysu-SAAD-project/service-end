@@ -28,12 +28,31 @@ func ShowActivitiesListHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Judge if the passed param is valid
 	if intPageNum > 0 {
-		// Get activity list and transfer it to json
+		// Get activity list
 		activityList := dbservice.GetActivityList(intPageNum - 1)
-		returnList := ActivityList{
-			Content: activityList,
+
+		// Change each element to the format that we need
+		infoArr := make([]ActivityIntroduction, 0)
+		for i := 0; i < len(activityList); i++ {
+			tmp := ActivityIntroduction{
+				ID: activityList[i].ID,
+				Name: activityList[i].Name,
+				StartTime: activityList[i].StartTime,
+				EndTime: activityList[i].EndTime,
+				Campus: activityList[i].Campus,
+				Type: activityList[i].Type,
+				Poster: activityList[i].Poster,
+				Location: activityList[i].Location,
+			}
+			infoArr = append(infoArr, tmp)
 		}
+		returnList := ActivityList{
+			Content: infoArr,
+		}
+
+		// Transfer it to json
 		stringList, err := json.Marshal(returnList)
 		if err != nil {
 			fmt.Fprint(os.Stderr, err)
@@ -61,6 +80,7 @@ func ShowActivityDetailHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Judge if the passed param is valid
 	if intID > 0 {
 		ok, activityInfo := dbservice.GetActivityInfo(intID)
 		if ok {
