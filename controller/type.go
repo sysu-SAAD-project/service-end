@@ -1,9 +1,5 @@
 package controller
 
-import (
-	"time"
-)
-
 // ActivityList defines the return format
 type ActivityList struct {
 	Content []ActivityIntroduction `json:"content"`
@@ -17,12 +13,34 @@ type ErrorMessage struct {
 
 // ActivityIntroduction include required information in activity list page
 type ActivityIntroduction struct {
-	ID        int        `json:"id"`
-	Name      string     `json:"name"`
-	StartTime *time.Time `json:"startTime"`
-	EndTime   *time.Time `json:"endTime"`
-	Campus    int        `json:"campus"`
-	Type      int        `json:"type"`
-	Poster    string     `json:"poster"`
-	Location  string     `json:"location"`
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	StartTime int64  `json:"startTime"`
+	EndTime   int64  `json:"endTime"`
+	Campus    int    `json:"campus"`
+	Type      int    `json:"type"`
+	Poster    string `json:"poster"`
+	Location  string `json:"location"`
+}
+
+type ActivityInfo struct {
+	ID              int    `json:"id"`
+	Name            string `json:"name"`
+	StartTime       int64  `json:"startTime"`
+	EndTime         int64  `json:"endTime"`
+	Campus          int    `json:"campus"`
+	Location        string `json:"location"`
+	EnrollCondition string `json:"enrollCondition"`
+	Sponsor         string `json:"sponsor"`
+	Type            int    `json:"type"`
+	PubStartTime    int64  `json:"pubStartTime"`
+	PubEndTime      int64  `json:"pubEndTime"`
+	Detail          string `json:"detail"`
+	Reward          string `json:"reward"`
+	Introduction    string `json:"introduction"`
+	Requirement     string `json:"requirement"`
+	Poster          string `json:"poster"`
+	Qrcode          string `json:"qrcode"`
+	Email           string `json:"email"`
+	Verified        int    `json:"verified"`
 }
