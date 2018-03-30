@@ -4,27 +4,28 @@ import "time"
 
 // ActivityInfo store activity information
 type ActivityInfo struct {
-	ID              int        `xorm:"pk autoincr 'id'" json:"id"`
-	Name            string     `xorm:"varchar(30) notnull" json:"name"`
-	StartTime       *time.Time `json:"startTime"`
-	EndTime         *time.Time `json:"endTime"`
-	Campus          int        `xorm:"bit(4)" json:"campus"`
-	Location        string     `xorm:"varchar(100)" json:"location"`
-	EnrollCondition string     `xorm:"varchar(50)" json:"enrollCondition"`
-	Sponsor         string     `xorm:"varchar(50)" json:"sponsor"`
-	Type            int        `json:"type"`
-	PubStartTime    *time.Time `json:"pubStartTime"`
-	PubEndTime      *time.Time `json:"pubEndTime"`
-	Detail          string     `xorm:"varchar(150)" json:"detail"`
-	Reward          string     `xorm:"varchar(30)" json:"reward"`
-	Introduction    string     `xorm:"varchar(50)" json:"introduction"`
-	Requirement     string     `xorm:"varchar(50)" json:"requirement"`
-	Poster          string     `xorm:"varchar(64)" json:"poster"`
-	Qrcode          string     `xorm:"varchar(64)"  json:"qrcode"`
-	Email           string     `xorm:"varchar(255)"  json:"email"`
-	Verified        int        `xorm:"bit(2)" json:"verified"`
+	ID              int    `xorm:"pk autoincr 'id'"`
+	Name            string `xorm:"varchar(30) notnull"`
+	StartTime       *time.Time
+	EndTime         *time.Time
+	Campus          int
+	Location        string `xorm:"varchar(100)"`
+	EnrollCondition string `xorm:"varchar(50)"`
+	Sponsor         string `xorm:"varchar(50)"`
+	Type            int
+	PubStartTime    *time.Time
+	PubEndTime      *time.Time
+	Detail          string `xorm:"varchar(150)" `
+	Reward          string `xorm:"varchar(30)"`
+	Introduction    string `xorm:"varchar(50)"`
+	Requirement     string `xorm:"varchar(50)"`
+	Poster          string `xorm:"varchar(64)"`
+	Qrcode          string `xorm:"varchar(64)"`
+	Email           string `xorm:"varchar(255)"`
+	Verified        int
 }
 
-func (u ActivityInfo) TableName() string {  
-    return "activity"
+// TableName defines table name
+func (u ActivityInfo) TableName() string {
+	return "activity"
 }

@@ -23,6 +23,7 @@ type ActivityIntroduction struct {
 	Location  string `json:"location"`
 }
 
+// ActivityInfo stores json format the front-end wanted
 type ActivityInfo struct {
 	ID              int    `json:"id"`
 	Name            string `json:"name"`

@@ -1,12 +1,12 @@
 package controller
 
 import (
-	"time"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 	dbservice "github.com/sysu-saad-project/service-end/models/service"
@@ -38,14 +38,14 @@ func ShowActivitiesListHandler(w http.ResponseWriter, r *http.Request) {
 		infoArr := make([]ActivityIntroduction, 0)
 		for i := 0; i < len(activityList); i++ {
 			tmp := ActivityIntroduction{
-				ID: activityList[i].ID,
-				Name: activityList[i].Name,
+				ID:        activityList[i].ID,
+				Name:      activityList[i].Name,
 				StartTime: activityList[i].StartTime.UnixNano() / int64(time.Millisecond),
-				EndTime: activityList[i].EndTime.UnixNano() / int64(time.Millisecond),
-				Campus: activityList[i].Campus,
-				Type: activityList[i].Type,
-				Poster: activityList[i].Poster,
-				Location: activityList[i].Location,
+				EndTime:   activityList[i].EndTime.UnixNano() / int64(time.Millisecond),
+				Campus:    activityList[i].Campus,
+				Type:      activityList[i].Type,
+				Poster:    activityList[i].Poster,
+				Location:  activityList[i].Location,
 			}
 			infoArr = append(infoArr, tmp)
 		}
@@ -86,26 +86,26 @@ func ShowActivityDetailHandler(w http.ResponseWriter, r *http.Request) {
 		ok, activityInfo := dbservice.GetActivityInfo(intID)
 		if ok {
 			// Convert to ms
-			retMsg := ActivityInfo {
-				ID: activityInfo.ID,
-				Name: activityInfo.Name,
-				StartTime: activityInfo.StartTime.UnixNano() / int64(time.Millisecond),
-				EndTime: activityInfo.EndTime.UnixNano() / int64(time.Millisecond),
-				Campus: activityInfo.Campus,
-				Location: activityInfo.Location,
+			retMsg := ActivityInfo{
+				ID:              activityInfo.ID,
+				Name:            activityInfo.Name,
+				StartTime:       activityInfo.StartTime.UnixNano() / int64(time.Millisecond),
+				EndTime:         activityInfo.EndTime.UnixNano() / int64(time.Millisecond),
+				Campus:          activityInfo.Campus,
+				Location:        activityInfo.Location,
 				EnrollCondition: activityInfo.EnrollCondition,
-				Sponsor: activityInfo.Sponsor,
-				Type: activityInfo.Type,
-				PubStartTime: activityInfo.PubStartTime.UnixNano() / int64(time.Millisecond),
-				PubEndTime: activityInfo.PubEndTime.UnixNano() / int64(time.Millisecond),
-				Detail: activityInfo.Detail,
-				Reward: activityInfo.Reward,
-				Introduction: activityInfo.Introduction,
-				Requirement: activityInfo.Requirement,
-				Poster: activityInfo.Poster,
-				Qrcode: activityInfo.Qrcode,
-				Email: activityInfo.Email,
-				Verified: activityInfo.Verified,
+				Sponsor:         activityInfo.Sponsor,
+				Type:            activityInfo.Type,
+				PubStartTime:    activityInfo.PubStartTime.UnixNano() / int64(time.Millisecond),
+				PubEndTime:      activityInfo.PubEndTime.UnixNano() / int64(time.Millisecond),
+				Detail:          activityInfo.Detail,
+				Reward:          activityInfo.Reward,
+				Introduction:    activityInfo.Introduction,
+				Requirement:     activityInfo.Requirement,
+				Poster:          activityInfo.Poster,
+				Qrcode:          activityInfo.Qrcode,
+				Email:           activityInfo.Email,
+				Verified:        activityInfo.Verified,
 			}
 			stringInfo, err := json.Marshal(retMsg)
 			if err != nil {
