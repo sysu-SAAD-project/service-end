@@ -47,6 +47,7 @@ func ShowActivitiesListHandler(w http.ResponseWriter, r *http.Request) {
 				Poster:    activityList[i].Poster,
 				Location:  activityList[i].Location,
 			}
+			tmp.Poster = GetPoster(tmp.Poster, tmp.Type)
 			infoArr = append(infoArr, tmp)
 		}
 		returnList := ActivityList{
@@ -107,6 +108,7 @@ func ShowActivityDetailHandler(w http.ResponseWriter, r *http.Request) {
 				Email:           activityInfo.Email,
 				Verified:        activityInfo.Verified,
 			}
+			retMsg.Poster = GetPoster(retMsg.Poster, retMsg.Type)
 			stringInfo, err := json.Marshal(retMsg)
 			if err != nil {
 				fmt.Fprint(os.Stderr, err)
