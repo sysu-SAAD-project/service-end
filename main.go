@@ -4,7 +4,7 @@ import (
 	"os"
 
 	flag "github.com/spf13/pflag"
-	server "github.com/sysu-saad-project/service-end/core/service"
+	"github.com/sysu-saad-project/service-end/router"
 )
 
 func main() {
@@ -15,6 +15,6 @@ func main() {
 	var port = flag.StringP("port", "p", PORT, "Define the port where service runs")
 	flag.Parse()
 
-	s := server.GetServer()
+	s := router.GetServer()
 	s.Run(":" + *port)
 }
