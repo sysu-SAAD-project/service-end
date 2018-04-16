@@ -18,10 +18,16 @@ before_install:
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
+# Create docker network
+  - docker network create activity
+  - docker network create dev
 
 # Test step
 script:
-  - true
+  - git clone https://github.com/sysu-SAAD-project/script.git
+  - docker-compose up -d
+  - cd dev
+  - docker-compose up -d
 
 after_success:
 # Push to docker registry
