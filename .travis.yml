@@ -25,9 +25,11 @@ before_install:
 # Test step
 script:
   - git clone https://github.com/sysu-SAAD-project/script.git
+  - cd script
   - docker-compose up -d
   - cd dev
   - docker-compose up -d
+  - cd ../..
 
 after_success:
 # Push to docker registry
