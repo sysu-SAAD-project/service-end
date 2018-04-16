@@ -30,6 +30,7 @@ script:
   - cd dev
   - docker-compose up -d
   - cd ../..
+  - go test ./...
 
 after_success:
 # Push to docker registry
