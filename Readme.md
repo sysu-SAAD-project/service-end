@@ -1,3 +1,4 @@
+![build status](https://travis-ci.org/sysu-go-online/service-end.svg?branch=master)
 # 服务后端说明
 
 ## 文件结构
