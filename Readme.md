@@ -13,7 +13,7 @@
 
 - router/
 
-    Strore router information
+    Store router information
 
 - models/
 

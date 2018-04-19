@@ -24,6 +24,11 @@ func GetServer() *negroni.Negroni {
 	act.HandleFunc("/", controller.ShowActivitiesListHandler).Methods("GET")
 	act.HandleFunc("/{id}", controller.ShowActivityDetailHandler).Methods("GET")
 
+	// Define /users subrouter
+	users := r.PathPrefix("/users").Subrouter()
+	users.HandleFunc("", controller.UserLoginHandler).Methods("POST")
+	users.HandleFunc("/", controller.UserLoginHandler).Methods("POST")
+
 	// Use classic server and return it
 	s := negroni.Classic()
 	s.UseHandler(r)

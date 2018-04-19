@@ -123,3 +123,25 @@ func ShowActivityDetailHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 	}
 }
+
+// UserLoginHandler return token string with given user code
+func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
+	// Use HTTP Request get openid from Wechat server
+
+
+	// Check whether user exist, if user don't exist then save user openid in db
+
+
+	// Check whether token exist in request, if exist then check whether timeout
+
+	// Condition: token exist and not timeout
+	// jwt is assigned by token in request
+
+	
+	// Condition: token not exist or token timeout
+	// Generate jwt with openid(sub), issuance time(iat) and expiration time(exp)
+
+
+	// Return jwt string
+
+}
