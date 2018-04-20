@@ -126,22 +126,63 @@ func ShowActivityDetailHandler(w http.ResponseWriter, r *http.Request) {
 
 // UserLoginHandler return token string with given user code
 func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
+	// Parse parameters
+	r.ParseForm()
+	var code string = r.PostForm.Get("code")
+	var token string = ""
+	if len(r.Header.Get("Authorization")) > 0 {
+		token = r.Header.Get("Authorization")
+	}
+
+	// If token exists, which means user openid exists and no need to request from Wechat
+	if token != "" {
+		// Check token and return status code and params
+		// status code: 0 -> check error; 1 -> timeout; 2 -> ok
+		[tokenStatusCode, tokenOpenId] = checkToken(token)
+		
+		// Check whether user exist and return status code
+		// status code: 0 -> error; 1 -> ok
+		userStatusCode = isUserExist(tokenOpenId)
+
+		if checkStatusCode == 2 && userStatusCode == 1 {
+			w.WriteHeader(500)
+			w.Write(token)
+			return
+		} else if tokenStatusCode == 0 {
+			// token error
+			w.WriteHeader(401)
+			return
+		}
+	}
+
+	// Condition: If token not exists or user not exists while token exists
 	// Use HTTP Request get openid from Wechat server
+	if token == "" || userStatusCode == 0 {
+		[sessionKey, openId] = getUserOpenId(code)
+		// token ok but user not exists, maybe mistake delete
+		if openId == tokenOpenId && tokenStatusCode == 2 {
+			saveUserInDB(openId)
+			w.WriteHeader(500)
+			w.Write(token)
+			return
+		}
 
+		// Check whether user exist, if user don't exist then save user openid in db
+		if !isUserExist(openId) {
+			saveUserInDB(openId)
+		}
+	}
 
-	// Check whether user exist, if user don't exist then save user openid in db
-
-
-	// Check whether token exist in request, if exist then check whether timeout
-
-	// Condition: token exist and not timeout
-	// jwt is assigned by token in request
-
-	
-	// Condition: token not exist or token timeout
+	// When go to this step, only one condition: token timeout
 	// Generate jwt with openid(sub), issuance time(iat) and expiration time(exp)
-
+	jwt, err := generateJWT(openId)
 
 	// Return jwt string
-
+	if err != nil {
+		fmt.Fprint(os.Stderr, err)
+		w.WriteHeader(400)
+		return
+	}
+	w.WriteHeader(500)
+	w.Write(jwt)
 }
