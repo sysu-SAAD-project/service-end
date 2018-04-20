@@ -29,3 +29,18 @@ func GetPoster(raw string, actType int) string {
 	}
 	return raw
 }
+
+// Check token and return token status code with openId
+func CheckToken(token string) (int, string) {
+
+}
+
+// Get user openId from Wechat server
+func GetUserOpenId(code string) (string, string) {
+
+}
+
+// Generate jwt with openid(sub), issuance time(iat) and expiration time(exp)
+func GenerateJWT(openId string) (string, error) {
+
+}

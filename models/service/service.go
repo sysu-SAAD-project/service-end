@@ -22,3 +22,13 @@ func GetActivityInfo(id int) (bool, entities.ActivityInfo) {
 	ok, _ := entities.Engine.ID(id).Where("activity.verified = 1").Get(&activity)
 	return ok, activity
 }
+
+// Check whether user with openId exists
+func IsUserExist(openId string) int {
+	return 1
+}
+
+// Save user with openId in db
+func SaveUserInDB(openId string) {
+	
+}

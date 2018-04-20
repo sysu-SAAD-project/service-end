@@ -129,25 +129,29 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse parameters
 	r.ParseForm()
 	var code string = r.PostForm.Get("code")
-	var token string = ""
+	var token, jwt, openId, tokenOpenId, sessionKey string = "", "", "", "", ""
+	var tokenStatusCode, userStatusCode int = -1, -1
+	var err error
+
 	if len(r.Header.Get("Authorization")) > 0 {
 		token = r.Header.Get("Authorization")
 	}
 
-	// If token exists, which means user openid exists and no need to request from Wechat
+	// Condition: token exists
 	if token != "" {
 		// Check token and return status code and params
 		// status code: 0 -> check error; 1 -> timeout; 2 -> ok
-		[tokenStatusCode, tokenOpenId] = checkToken(token)
+		tokenStatusCode, tokenOpenId = CheckToken(token)
 		
 		// Check whether user exist and return status code
 		// status code: 0 -> error; 1 -> ok
-		userStatusCode = isUserExist(tokenOpenId)
+		userStatusCode = dbservice.IsUserExist(tokenOpenId)
 
-		if checkStatusCode == 2 && userStatusCode == 1 {
-			w.WriteHeader(500)
-			w.Write(token)
-			return
+		if tokenStatusCode == 2 && userStatusCode == 1 {
+			// w.WriteHeader(500)
+			// w.Write(TokenToJson(token))
+			// return
+			jwt = token
 		} else if tokenStatusCode == 0 {
 			// token error
 			w.WriteHeader(401)
@@ -155,34 +159,42 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Condition: If token not exists or user not exists while token exists
+	// Condition: token not exists or user not exists while token exists
 	// Use HTTP Request get openid from Wechat server
 	if token == "" || userStatusCode == 0 {
-		[sessionKey, openId] = getUserOpenId(code)
+		sessionKey, openId = GetUserOpenId(code)
 		// token ok but user not exists, maybe mistake delete
 		if openId == tokenOpenId && tokenStatusCode == 2 {
-			saveUserInDB(openId)
-			w.WriteHeader(500)
-			w.Write(token)
-			return
+			dbservice.SaveUserInDB(openId)
+			// w.WriteHeader(500)
+			// w.Write(TokenToJson(token))
+			// return
+			jwt = token
 		}
 
 		// Check whether user exist, if user don't exist then save user openid in db
-		if !isUserExist(openId) {
-			saveUserInDB(openId)
+		if !dbservice.IsUserExist(openId) {
+			dbservice.SaveUserInDB(openId)
 		}
 	}
 
-	// When go to this step, only one condition: token timeout
+	// Condition: token timeout or not exists
 	// Generate jwt with openid(sub), issuance time(iat) and expiration time(exp)
-	jwt, err := generateJWT(openId)
+	if jwt == "" {
+		jwt, err = GenerateJWT(openId)
 
-	// Return jwt string
+		if err != nil {
+			fmt.Fprint(os.Stderr, err)
+			w.WriteHeader(400)
+			return
+		}
+	}
+
+	stringInfo, err := json.Marshal(jwt)
 	if err != nil {
 		fmt.Fprint(os.Stderr, err)
-		w.WriteHeader(400)
+		w.WriteHeader(500)
 		return
 	}
-	w.WriteHeader(500)
-	w.Write(jwt)
+	w.Write(stringInfo)
 }
