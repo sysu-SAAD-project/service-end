@@ -42,7 +42,7 @@ func GetPoster(raw string, actType int) string {
 // Check token and return token status code with openId
 // status code: 0 -> check error; 1 -> timeout; 2 -> ok
 func CheckToken(tokenString string) (int, string) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])

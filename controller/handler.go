@@ -129,7 +129,7 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse parameters
 	r.ParseForm()
 	var code string = r.PostForm.Get("code")
-	var token, jwt, openId, tokenOpenId, sessionKey string = "", "", "", "", ""
+	var token, jwt, openId, tokenOpenId string = "", "", "", ""
 	var tokenStatusCode int = -1
 	var userStatusCode bool = false
 	var err error
