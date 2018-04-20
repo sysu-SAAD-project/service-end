@@ -130,7 +130,8 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	var code string = r.PostForm.Get("code")
 	var token, jwt, openId, tokenOpenId, sessionKey string = "", "", "", "", ""
-	var tokenStatusCode, userStatusCode int = -1, -1
+	var tokenStatusCode int = -1
+	var userStatusCode bool = false
 	var err error
 
 	if len(r.Header.Get("Authorization")) > 0 {
@@ -144,16 +145,13 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		tokenStatusCode, tokenOpenId = CheckToken(token)
 		
 		// Check whether user exist and return status code
-		// status code: 0 -> error; 1 -> ok
+		// status code: false -> not exist; true -> exist
 		userStatusCode = dbservice.IsUserExist(tokenOpenId)
 
-		if tokenStatusCode == 2 && userStatusCode == 1 {
-			// w.WriteHeader(500)
-			// w.Write(TokenToJson(token))
-			// return
+		if tokenStatusCode == 2 && userStatusCode == true {
 			jwt = token
 		} else if tokenStatusCode == 0 {
-			// token error
+			// token check error
 			w.WriteHeader(401)
 			return
 		}
@@ -161,14 +159,16 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Condition: token not exists or user not exists while token exists
 	// Use HTTP Request get openid from Wechat server
-	if token == "" || userStatusCode == 0 {
-		sessionKey, openId = GetUserOpenId(code)
+	if token == "" || userStatusCode == false {
+		openId, err = GetUserOpenId(code)
+		if err != nil {
+			fmt.Fprint(os.Stderr, err)
+			w.WriteHeader(400)
+			return
+		}
 		// token ok but user not exists, maybe mistake delete
 		if openId == tokenOpenId && tokenStatusCode == 2 {
 			dbservice.SaveUserInDB(openId)
-			// w.WriteHeader(500)
-			// w.Write(TokenToJson(token))
-			// return
 			jwt = token
 		}
 
@@ -190,10 +190,11 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	stringInfo, err := json.Marshal(jwt)
+	tmpToken := TokenInfo{jwt}
+	stringInfo, err := json.Marshal(tmpToken)
 	if err != nil {
 		fmt.Fprint(os.Stderr, err)
-		w.WriteHeader(500)
+		w.WriteHeader(400)
 		return
 	}
 	w.Write(stringInfo)

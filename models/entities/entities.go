@@ -25,7 +25,18 @@ type ActivityInfo struct {
 	Verified        int
 }
 
+type UserInfo struct {
+	UserId			string `xorm:"varchar(64)"`
+	UserName 		string `xorm:"varchar(64)"`
+	Email 			string `xorm:"varchar(100)"`
+	Phone 			string `xorm:"varchar(20)"`
+}
+
 // TableName defines table name
 func (u ActivityInfo) TableName() string {
 	return "activity"
+}
+
+func (u UserInfo) TableName() string {
+	return "user"
 }

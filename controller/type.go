@@ -45,3 +45,8 @@ type ActivityInfo struct {
 	Email           string `json:"email"`
 	Verified        int    `json:"verified"`
 }
+
+// TokenInfo stores json format the front-end wanted
+type TokenInfo struct {
+	Token string `json:"token"`
+}

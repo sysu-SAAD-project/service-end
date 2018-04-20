@@ -24,11 +24,14 @@ func GetActivityInfo(id int) (bool, entities.ActivityInfo) {
 }
 
 // Check whether user with openId exists
-func IsUserExist(openId string) int {
-	return 1
+func IsUserExist(openId string) bool {
+	has, _ := entities.Engine.Table("user").Where("user_id = ?", openId).Exist()
+	return has
 }
 
 // Save user with openId in db
 func SaveUserInDB(openId string) {
-	
+	user := entities.UserInfo{openId, "", "", ""}
+	entities.Engine.Table("user").InsertOne(&user)
+	return
 }
