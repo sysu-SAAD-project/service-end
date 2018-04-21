@@ -1,5 +1,6 @@
 package controller
 import (
+	"errors"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -8,7 +9,8 @@ import (
 	"fmt"
 )
 
-const hmacSampleSecret = "sysu_activity_2018_activity_sysu"
+const secret  = "sysu_activity_2018_activity_sysu"
+
 // GetPoster judge if the poster and returns accurate one with given type
 func GetPoster(raw string, actType int) string {
 	if len(raw) == 0 {
@@ -42,6 +44,7 @@ func GetPoster(raw string, actType int) string {
 // Check token and return token status code with openId
 // status code: 0 -> check error; 1 -> timeout; 2 -> ok
 func CheckToken(tokenString string) (int, string) {
+	var hmacSampleSecret  = []byte(secret)
 	token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -56,7 +59,7 @@ func CheckToken(tokenString string) (int, string) {
 		expTime := claims["exp"]
 		openId := claims["sub"]
 
-		if expTime.(int64) > time.Now().Unix() {
+		if (int64)(expTime.(float64)) > time.Now().Unix() {
 			return 1, openId.(string)
 		}
 		return 2, openId.(string)
@@ -85,6 +88,12 @@ func GetUserOpenId(code string) (string, error) {
 	if err = json.Unmarshal(body, &retData); err != nil {
         return "", err
 	}
+
+	// Wechat reponse uses errcode in json and status code will always be 200
+	if _, ok := retData["errcode"]; ok {  
+		return "", errors.New(retData["errmsg"].(string))
+	}
+
 	openId := retData["openid"].(string)
     return openId, nil
 }
@@ -93,6 +102,7 @@ func GetUserOpenId(code string) (string, error) {
 func GenerateJWT(openId string) (string, error) {
 	// expire in two weeks  
 	var exp = time.Hour * 24 * 14
+	var hmacSampleSecret  = []byte(secret)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": openId,
 		"iat": time.Now().Unix(),

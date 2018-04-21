@@ -33,4 +33,10 @@ func init() {
 		Engine.ShowSQL(true)
 		Engine.Logger().SetLevel(core.LOG_DEBUG)
 	}
+
+	// Automatically sync table to db
+	// err = Engine.Sync2(new(ActivityInfo), new(UserInfo))
+	// if err != nil {
+	// 	panic(err)
+	// }
 }

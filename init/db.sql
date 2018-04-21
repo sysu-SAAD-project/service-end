@@ -20,3 +20,11 @@ CREATE TABLE `activity` (
 	`verified` BINARY(2) NOT NULL,
 	PRIMARY KEY (`id`)
 );
+
+CREATE TABLE `user` (
+	`userid` varchar(64) NOT NULL,
+	`username` varchar(64),
+	`email` varchar(100),
+	`phone` varchar(20),
+	PRIMARY KEY (`userid`)
+);

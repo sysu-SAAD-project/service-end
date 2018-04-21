@@ -26,7 +26,7 @@ type ActivityInfo struct {
 }
 
 type UserInfo struct {
-	UserId			string `xorm:"varchar(64)"`
+	UserId			string `xorm:"varchar(64) pk"`
 	UserName 		string `xorm:"varchar(64)"`
 	Email 			string `xorm:"varchar(100)"`
 	Phone 			string `xorm:"varchar(20)"`

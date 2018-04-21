@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"io/ioutil"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -127,8 +128,11 @@ func ShowActivityDetailHandler(w http.ResponseWriter, r *http.Request) {
 // UserLoginHandler return token string with given user code
 func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse parameters
-	r.ParseForm()
-	var code string = r.PostForm.Get("code")
+	var reqBody map[string]interface{}
+	tmpBody, _ := ioutil.ReadAll(r.Body)
+	json.Unmarshal(tmpBody, &reqBody)
+
+	var code string = reqBody["code"].(string)
 	var token, jwt, openId, tokenOpenId string = "", "", "", ""
 	var tokenStatusCode int = -1
 	var userStatusCode bool = false
@@ -161,6 +165,11 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 	// Use HTTP Request get openid from Wechat server
 	if token == "" || userStatusCode == false {
 		openId, err = GetUserOpenId(code)
+		// For test
+		// openId, _ = GetUserOpenId(code)
+		// openId = "OPENID"
+		// For test
+
 		if err != nil {
 			fmt.Fprint(os.Stderr, err)
 			w.WriteHeader(400)
