@@ -2,9 +2,4 @@ FROM ubuntu
 ADD main /
 ENTRYPOINT ["/main"]
 
-EXPOSE 8080
-
-ENV PORT 8080
-ENV DATABASE_ADDRESS=mysql
-ENV DEVELOP=FALSE
-ENV DOCKER_ADDRESS=docker
+RUN apt-get update && apt-get install -y ca-certificates
