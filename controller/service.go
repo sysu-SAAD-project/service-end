@@ -1,15 +1,18 @@
 package controller
+
 import (
-	"errors"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
+
 	"github.com/dgrijalva/jwt-go"
-	"fmt"
+	"github.com/sysu-saad-project/service-end/models/service"
 )
 
-const secret  = "sysu_activity_2018_activity_sysu"
+const secret = "sysu_activity_2018_activity_sysu"
 
 // GetPoster judge if the poster and returns accurate one with given type
 func GetPoster(raw string, actType int) string {
@@ -41,10 +44,10 @@ func GetPoster(raw string, actType int) string {
 	return raw
 }
 
-// Check token and return token status code with openId
+// CheckToken Check token and return token status code with openId
 // status code: 0 -> check error; 1 -> timeout; 2 -> ok
 func CheckToken(tokenString string) (int, string) {
-	var hmacSampleSecret  = []byte(secret)
+	var hmacSampleSecret = []byte(secret)
 	token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -68,7 +71,7 @@ func CheckToken(tokenString string) (int, string) {
 	}
 }
 
-// Get user openId from Wechat server
+// GetUserOpenId Get user openId from Wechat server
 func GetUserOpenId(code string) (string, error) {
 	var retData map[string]interface{}
 	// Get from Wechat api
@@ -76,40 +79,49 @@ func GetUserOpenId(code string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	
+
 	// Read response body
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
-	
+
 	// decode json string
 	if err = json.Unmarshal(body, &retData); err != nil {
-        return "", err
+		return "", err
 	}
 
 	// Wechat reponse uses errcode in json and status code will always be 200
-	if _, ok := retData["errcode"]; ok {  
+	if _, ok := retData["errcode"]; ok {
 		return "", errors.New(retData["errmsg"].(string))
 	}
 
 	openId := retData["openid"].(string)
-    return openId, nil
+	return openId, nil
 }
 
-// Generate jwt with openid(sub), issuance time(iat) and expiration time(exp)
+// GenerateJWT Generate jwt with openid(sub), issuance time(iat) and expiration time(exp)
 func GenerateJWT(openId string) (string, error) {
-	// expire in two weeks  
+	// expire in two weeks
 	var exp = time.Hour * 24 * 14
-	var hmacSampleSecret  = []byte(secret)
+	var hmacSampleSecret = []byte(secret)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": openId,
 		"iat": time.Now().Unix(),
 		"exp": time.Now().Add(exp).Unix(),
 	})
-	
+
 	// Sign and get the complete encoded token as a string using the secret
 	tokenString, err := token.SignedString(hmacSampleSecret)
 	return tokenString, err
+}
+
+// CheckUser check if the token is valid and if the user exists
+func CheckUser(userid string, token string) bool {
+	tokenValidation, tokenString := CheckToken(token)
+	if tokenValidation == 2 && token == tokenString {
+		return service.CheckUserID(userid)
+	}
+	return false
 }

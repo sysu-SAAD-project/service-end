@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/sysu-saad-project/service-end/models/entities"
 )
 
@@ -34,4 +35,15 @@ func SaveUserInDB(openId string) {
 	user := entities.UserInfo{openId, "", "", ""}
 	entities.Engine.Table("user").InsertOne(&user)
 	return
+}
+
+// CheckUserID check if the user exists in the db
+func CheckUserID(userid string) bool {
+	user := new(entities.UserInfo)
+	count, err := entities.Engine.Where("user_id = ?", userid).Count(user)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	return count == 1
 }
