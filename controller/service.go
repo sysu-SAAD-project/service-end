@@ -116,12 +116,3 @@ func GenerateJWT(openId string) (string, error) {
 	tokenString, err := token.SignedString(hmacSampleSecret)
 	return tokenString, err
 }
-
-// CheckUser check if the token is valid and if the user exists
-func CheckUser(userid string, token string) bool {
-	tokenValidation, tokenString := CheckToken(token)
-	if tokenValidation == 2 && token == tokenString {
-		return service.CheckUserID(userid)
-	}
-	return false
-}
