@@ -47,3 +47,10 @@ func CheckUserID(userid string) bool {
 	}
 	return count == 1
 }
+
+// GetActApplyListByUserId return wanted activity apply list with given user openId
+func GetActApplyListByUserId(openId string) []entities.ActApplyInfo {
+	actApplyList := make([]entities.ActApplyInfo, 0)
+	entities.Engine.Table("actApply").Where("user_id = ?", openId).Find(&actApplyList)
+	return actApplyList
+}

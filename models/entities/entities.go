@@ -32,6 +32,15 @@ type UserInfo struct {
 	Phone 			string `xorm:"varchar(20)"`
 }
 
+type ActApplyInfo struct {
+	Actid 	 int    `xorm:"int notnull"`
+	UserId   string `xorm:"varchar(64) notnull"`
+	UserName string `xorm:"varchar(64)"`
+	Email 	 string `xorm:"varchar(100)"`
+    Phone 	 string `xorm:"varchar(20)"`
+    School 	 string `xorm:"varchar(100)"`
+}
+
 // TableName defines table name
 func (u ActivityInfo) TableName() string {
 	return "activity"
@@ -39,4 +48,8 @@ func (u ActivityInfo) TableName() string {
 
 func (u UserInfo) TableName() string {
 	return "user"
+}
+
+func (u ActApplyInfo) TableName() string {
+	return "actApply"
 }
