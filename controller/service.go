@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/sysu-saad-project/service-end/models/service"
 )
 
 const secret = "sysu_activity_2018_activity_sysu"
