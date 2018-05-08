@@ -50,3 +50,17 @@ type ActivityInfo struct {
 type TokenInfo struct {
 	Token string `json:"token"`
 }
+
+// ActApplyInfo stores json format the front-end wanted
+type ActApplyInfo struct {
+	Actid 	 int  `json:"actid"`
+	UserName string `json:"username"`
+	Email 	 string `json:"email"`
+    Phone 	 string `json:"phone"`
+    School 	 string `json:"school"`
+}
+
+// ActApplyList defines the return format
+type ActApplyList struct {
+	Content []ActApplyInfo `json:"content"`
+}

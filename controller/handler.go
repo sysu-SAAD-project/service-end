@@ -208,3 +208,74 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Write(stringInfo)
 }
+
+// ShowActApplysListHandler parse userOpenId and return detailed activity apply list
+func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
+	var token, userOpenId string = "", ""
+	var tokenStatusCode int = -1
+	var userStatusCode bool = false
+	var err error
+
+	if len(r.Header.Get("Authorization")) > 0 {
+		token = r.Header.Get("Authorization")
+	}
+
+	if token == "" {
+		// user doesn't login in
+		w.WriteHeader(400)
+		return
+	}
+
+	// Check token and return status code and openId
+	// status code: 0 -> check error; 1 -> timeout; 2 -> ok
+	tokenStatusCode, userOpenId = CheckToken(token)
+	if tokenStatusCode != 2 {
+		// user token string error or timeout, need login in again
+		w.WriteHeader(400)
+		return
+	}
+
+	// Check whether user exist and return status code
+	// status code: false -> not exist; true -> exist
+	userStatusCode = dbservice.IsUserExist(userOpenId)
+	if userStatusCode == false {
+		// user not exist, need login in again
+		w.WriteHeader(400)
+		return
+	}
+	
+	// Get activity apply list
+	actApplyList := dbservice.GetActApplyListByUserId(userOpenId)
+
+	// Change each element to the format that we need
+	infoArr := make([]ActApplyInfo, 0)
+	for i := 0; i < len(actApplyList); i++ {
+		tmp := ActApplyInfo{
+			Actid:        actApplyList[i].Actid,
+			UserName:     actApplyList[i].UserName,
+			Email:        actApplyList[i].Email,
+			Phone:        actApplyList[i].Phone,
+			School:       actApplyList[i].School,
+		}
+		infoArr = append(infoArr, tmp)
+	}
+	returnList := ActApplyList{
+		Content: infoArr,
+	}
+
+	// Transfer it to json
+	stringList, err := json.Marshal(returnList)
+	if err != nil {
+		// error
+		fmt.Fprint(os.Stderr, err)
+		w.WriteHeader(500)
+		return
+	}
+	if len(actApplyList) <= 0 {
+		// user doesn't sign up any activity
+		w.WriteHeader(204)
+	} else {
+		// ok
+		w.Write(stringList)
+	}
+}
