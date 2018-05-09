@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+
 	"github.com/sysu-saad-project/service-end/models/entities"
 )
 
@@ -24,9 +25,21 @@ func GetActivityInfo(id int) (bool, entities.ActivityInfo) {
 	return ok, activity
 }
 
-// Check whether user with openId exists
+// Check whether user with openId exists --- fix user_id into userid
 func IsUserExist(openId string) bool {
-	has, _ := entities.Engine.Table("user").Where("user_id = ?", openId).Exist()
+	has, _ := entities.Engine.Table("user").Where("userid = ?", openId).Exist()
+	return has
+}
+
+// Check whether activity with actId exists
+func IsActExists(actId int) bool {
+	has, _ := entities.Engine.Table("activity").Where("id = ?", actId).Exist()
+	return has
+}
+
+// Check whether record with actId and userId exists
+func IsRecordExist(actId int, openId string) bool {
+	has, _ := entities.Engine.Table("actapply").Where("actid = ? and userid = ?", actId, openId).Exist()
 	return has
 }
 
@@ -37,10 +50,17 @@ func SaveUserInDB(openId string) {
 	return
 }
 
-// CheckUserID check if the user exists in the db
+// Save actapply with info...(ActApplyInfo) indb
+func SaveActApplyInDB(actId int, userId string, userName string, email string, phone string, school string) {
+	actApply := entities.ActApplyInfo{actId, userId, userName, email, phone, school}
+	entities.Engine.Table("actApply").InsertOne(&actApply)
+	return
+}
+
+// CheckUserID check if the user exists in the db --- yubei's part but I change user_id into userid
 func CheckUserID(userid string) bool {
 	user := new(entities.UserInfo)
-	count, err := entities.Engine.Where("user_id = ?", userid).Count(user)
+	count, err := entities.Engine.Where("userid = ?", userid).Count(user)
 	if err != nil {
 		fmt.Println(err)
 		return false
@@ -51,6 +71,6 @@ func CheckUserID(userid string) bool {
 // GetActApplyListByUserId return wanted activity apply list with given user openId
 func GetActApplyListByUserId(openId string) []entities.ActApplyInfo {
 	actApplyList := make([]entities.ActApplyInfo, 0)
-	entities.Engine.Table("actApply").Where("user_id = ?", openId).Find(&actApplyList)
+	entities.Engine.Table("actApply").Where("userid = ?", openId).Find(&actApplyList)
 	return actApplyList
 }

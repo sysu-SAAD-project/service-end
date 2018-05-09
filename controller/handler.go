@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"regexp"
 
 	"github.com/gorilla/mux"
 	dbservice "github.com/sysu-saad-project/service-end/models/service"
@@ -278,4 +279,117 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 		// ok
 		w.Write(stringList)
 	}
+}
+
+// UploadActApplyHandler post participant's info and deposite into DB
+func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
+	// Check Authorization validation
+	var token, userOpenId string = "", ""
+	var tokenStatusCode int = -1
+	var userStatusCode bool = false
+	var err error
+
+	if len(r.Header.Get("Authorization")) > 0 {
+		token = r.Header.Get("Authorization")
+	}
+
+	if token == "" {
+		// user doesn't login in
+		w.WriteHeader(400)
+		return
+	}
+
+	// Check token and return status code and openId
+	// status code: 0 -> check error; 1 -> timeout; 2 -> ok
+	tokenStatusCode, userOpenId = CheckToken(token)
+	if tokenStatusCode != 2 {
+		// user token string error or timeout, need login in again
+		w.WriteHeader(400)
+		return
+	}
+
+	// Check whether user exist and return status code
+	// status code: false -> not exist; true -> exist
+	userStatusCode = dbservice.IsUserExist(userOpenId)
+	if userStatusCode == false {
+		// user not exist, need login in again
+		w.WriteHeader(400)
+		return
+	}
+
+	// Parse req form
+	r.ParseForm()
+	var actId int
+	if len(r.Form["actId"]) <= 0 {
+		w.WriteHeader(400)
+		return
+	} else {
+		actId, err = strconv.Atoi(r.Form["actId"][0])
+		if err != nil {
+			fmt.Fprint(os.Stderr, err)
+			w.WriteHeader(400)
+		}
+	}
+
+	// Parse req body
+	var reqBody map[string]interface{}
+	tmpBody, _ := ioutil.ReadAll(r.Body)
+	json.Unmarshal(tmpBody, &reqBody)
+	var userId string  = reqBody["userid"].(string)
+	var userName string = reqBody["username"].(string)
+	var email string = reqBody["email"].(string)
+	var phone string = reqBody["phone"].(string)
+	var school string = reqBody["school"].(string)
+
+	// Check activity exists
+	var actExists bool = false
+	actExists = dbservice.IsActExists(actId)
+	if actExists == false {
+		w.WriteHeader(400)
+		return
+	}
+
+	// Check userId validation
+	var userIdStatus bool = false
+	userIdStatus = userId == userOpenId
+	if userIdStatus == false {
+		w.WriteHeader(400)
+		return
+	}
+
+	// Check userName validation
+	var userNameStatus bool = false
+	userNameStatus, _ = regexp.MatchString("^[0-9]{8}$", userName)
+	if userNameStatus == false {
+		w.WriteHeader(400)
+		return
+	}
+
+	// Check email validation
+	var emailStatus bool = false
+	emailStatus, _ = regexp.MatchString("^([\w\.\_]{2,10})@(\w{1,}).([a-z]{2,4})$", email)
+	if emailStatus == false {
+		w.WriteHeader(400)
+		return
+	}
+
+	// Check phone validation
+	var phoneStatus bool = false
+	phoneStatus, _ = regexp.MatchString("^(1[3|4|5|8][0-9]\d{8})$", phone)
+	if phoneStatus == false {
+		w.WriteHeader(400)
+		return
+	}
+
+	// Check user repeated registration
+	var recordExists bool = false
+	recordExists = dbservice.IsRecordExist(actId, userId)
+	if recordExists == true {
+		w.WriteHeader(400)
+		return
+	}
+
+	// Everything is ok
+	dbservice.SaveActApplyInDB(actId, userId, userName, email, phone, school)
+	w.WriteHeader(200)
 }

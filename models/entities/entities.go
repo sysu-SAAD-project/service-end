@@ -26,19 +26,19 @@ type ActivityInfo struct {
 }
 
 type UserInfo struct {
-	UserId			string `xorm:"varchar(64) pk"`
-	UserName 		string `xorm:"varchar(64)"`
-	Email 			string `xorm:"varchar(100)"`
-	Phone 			string `xorm:"varchar(20)"`
+	UserId   string `xorm:"varchar(64) pk"`
+	UserName string `xorm:"varchar(64)"`
+	Email    string `xorm:"varchar(100)"`
+	Phone    string `xorm:"varchar(20)"`
 }
 
 type ActApplyInfo struct {
-	Actid 	 int    `xorm:"int notnull"`
-	UserId   string `xorm:"varchar(64) notnull"`
+	Actid    int    `xorm:"int notnull pk"`
+	UserId   string `xorm:"varchar(64) notnull pk"`
 	UserName string `xorm:"varchar(64)"`
-	Email 	 string `xorm:"varchar(100)"`
-    Phone 	 string `xorm:"varchar(20)"`
-    School 	 string `xorm:"varchar(100)"`
+	Email    string `xorm:"varchar(100)"`
+	Phone    string `xorm:"varchar(20)"`
+	School   string `xorm:"varchar(100)"`
 }
 
 // TableName defines table name
