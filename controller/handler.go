@@ -1,14 +1,14 @@
 package controller
 
 import (
-	"io/ioutil"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 	"time"
-	"regexp"
 
 	"github.com/gorilla/mux"
 	dbservice "github.com/sysu-saad-project/service-end/models/service"
@@ -148,7 +148,7 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		// Check token and return status code and params
 		// status code: 0 -> check error; 1 -> timeout; 2 -> ok
 		tokenStatusCode, tokenOpenId = CheckToken(token)
-		
+
 		// Check whether user exist and return status code
 		// status code: false -> not exist; true -> exist
 		userStatusCode = dbservice.IsUserExist(tokenOpenId)
@@ -244,7 +244,7 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
-	
+
 	// Get activity apply list
 	actApplyList := dbservice.GetActApplyListByUserId(userOpenId)
 
@@ -252,11 +252,11 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 	infoArr := make([]ActApplyInfo, 0)
 	for i := 0; i < len(actApplyList); i++ {
 		tmp := ActApplyInfo{
-			Actid:        actApplyList[i].Actid,
-			UserName:     actApplyList[i].UserName,
-			Email:        actApplyList[i].Email,
-			Phone:        actApplyList[i].Phone,
-			School:       actApplyList[i].School,
+			Actid:    actApplyList[i].Actid,
+			UserName: actApplyList[i].UserName,
+			Email:    actApplyList[i].Email,
+			Phone:    actApplyList[i].Phone,
+			School:   actApplyList[i].School,
 		}
 		infoArr = append(infoArr, tmp)
 	}
@@ -335,7 +335,7 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	var reqBody map[string]interface{}
 	tmpBody, _ := ioutil.ReadAll(r.Body)
 	json.Unmarshal(tmpBody, &reqBody)
-	var userId string  = reqBody["userid"].(string)
+	var userId string = reqBody["userid"].(string)
 	var userName string = reqBody["username"].(string)
 	var email string = reqBody["email"].(string)
 	var phone string = reqBody["phone"].(string)
@@ -367,7 +367,7 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check email validation
 	var emailStatus bool = false
-	emailStatus, _ = regexp.MatchString("^([\w\.\_]{2,10})@(\w{1,}).([a-z]{2,4})$", email)
+	emailStatus, _ = regexp.MatchString(`^([\w\.\_]{2,10})@(\w{1,}).([a-z]{2,4})$`, email)
 	if emailStatus == false {
 		w.WriteHeader(400)
 		return
@@ -375,7 +375,7 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check phone validation
 	var phoneStatus bool = false
-	phoneStatus, _ = regexp.MatchString("^(1[3|4|5|8][0-9]\d{8})$", phone)
+	phoneStatus, _ = regexp.MatchString(`^(1[3|4|5|8][0-9]\d{8})$`, phone)
 	if phoneStatus == false {
 		w.WriteHeader(400)
 		return
