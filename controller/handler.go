@@ -348,7 +348,7 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check userId validation
+	// Check studentId validation
 	var studentIdStatus bool = false
 	studentIdStatus, _ = regexp.MatchString("^[1-9][0-9]{7}$", studentId)
 	if studentIdStatus == false {
@@ -373,7 +373,7 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Everything is ok
-	ok := dbservice.SaveActApplyInDB(actId, userId, userName, studentId, phone, school)
+	ok := dbservice.SaveActApplyInDB(actId, userOpenId, userName, studentId, phone, school)
 	if !ok {
 		w.WriteHeader(500)
 	} else {
