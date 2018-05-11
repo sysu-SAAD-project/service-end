@@ -223,7 +223,7 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 
 	if token == "" {
 		// user doesn't login in
-		w.WriteHeader(400)
+		w.WriteHeader(401)
 		return
 	}
 
@@ -232,7 +232,7 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 	tokenStatusCode, userOpenId = CheckToken(token)
 	if tokenStatusCode != 2 {
 		// user token string error or timeout, need login in again
-		w.WriteHeader(400)
+		w.WriteHeader(401)
 		return
 	}
 
@@ -241,7 +241,7 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 	userStatusCode = dbservice.IsUserExist(userOpenId)
 	if userStatusCode == false {
 		// user not exist, need login in again
-		w.WriteHeader(400)
+		w.WriteHeader(401)
 		return
 	}
 
@@ -252,11 +252,11 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 	infoArr := make([]ActApplyInfo, 0)
 	for i := 0; i < len(actApplyList); i++ {
 		tmp := ActApplyInfo{
-			Actid:    actApplyList[i].Actid,
-			UserName: actApplyList[i].UserName,
-			Email:    actApplyList[i].Email,
-			Phone:    actApplyList[i].Phone,
-			School:   actApplyList[i].School,
+			Actid:     actApplyList[i].Actid,
+			UserName:  actApplyList[i].UserName,
+			StudentId: actApplyList[i].StudentId,
+			Phone:     actApplyList[i].Phone,
+			School:    actApplyList[i].School,
 		}
 		infoArr = append(infoArr, tmp)
 	}
@@ -295,7 +295,7 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 
 	if token == "" {
 		// user doesn't login in
-		w.WriteHeader(400)
+		w.WriteHeader(401)
 		return
 	}
 
@@ -304,7 +304,7 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	tokenStatusCode, userOpenId = CheckToken(token)
 	if tokenStatusCode != 2 {
 		// user token string error or timeout, need login in again
-		w.WriteHeader(400)
+		w.WriteHeader(401)
 		return
 	}
 
@@ -313,7 +313,7 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	userStatusCode = dbservice.IsUserExist(userOpenId)
 	if userStatusCode == false {
 		// user not exist, need login in again
-		w.WriteHeader(400)
+		w.WriteHeader(401)
 		return
 	}
 
@@ -335,40 +335,23 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	var reqBody map[string]interface{}
 	tmpBody, _ := ioutil.ReadAll(r.Body)
 	json.Unmarshal(tmpBody, &reqBody)
-	var userId string = reqBody["userid"].(string)
 	var userName string = reqBody["username"].(string)
-	var email string = reqBody["email"].(string)
+	var studentId string = reqBody["studentid"].(string)
 	var phone string = reqBody["phone"].(string)
 	var school string = reqBody["school"].(string)
 
 	// Check activity exists
 	var actExists bool = false
-	actExists = dbservice.IsActExists(actId)
+	actExists = dbservice.IsActExist(actId)
 	if actExists == false {
 		w.WriteHeader(400)
 		return
 	}
 
 	// Check userId validation
-	var userIdStatus bool = false
-	userIdStatus = userId == userOpenId
-	if userIdStatus == false {
-		w.WriteHeader(400)
-		return
-	}
-
-	// Check userName validation
-	var userNameStatus bool = false
-	userNameStatus, _ = regexp.MatchString("^[0-9]{8}$", userName)
-	if userNameStatus == false {
-		w.WriteHeader(400)
-		return
-	}
-
-	// Check email validation
-	var emailStatus bool = false
-	emailStatus, _ = regexp.MatchString(`^([\w\.\_]{2,10})@(\w{1,}).([a-z]{2,4})$`, email)
-	if emailStatus == false {
+	var studentIdStatus bool = false
+	studentIdStatus, _ = regexp.MatchString("^[1-9][0-9]{7}$", studentId)
+	if studentIdStatus == false {
 		w.WriteHeader(400)
 		return
 	}
@@ -383,13 +366,17 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check user repeated registration
 	var recordExists bool = false
-	recordExists = dbservice.IsRecordExist(actId, userId)
+	recordExists = dbservice.IsRecordExist(actId, studentId)
 	if recordExists == true {
 		w.WriteHeader(400)
 		return
 	}
 
 	// Everything is ok
-	dbservice.SaveActApplyInDB(actId, userId, userName, email, phone, school)
-	w.WriteHeader(200)
+	ok := dbservice.SaveActApplyInDB(actId, userId, userName, studentId, phone, school)
+	if !ok {
+		w.WriteHeader(500)
+	} else {
+		w.WriteHeader(200)
+	}
 }

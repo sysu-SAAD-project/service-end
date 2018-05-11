@@ -33,7 +33,7 @@ CREATE TABLE `actapply` (
 	`actid` INT NOT NULL,
 	`userid` varchar(64) NOT NULL,
 	`username` varchar(64),
-	`email` varchar(100),
+	`studentid` varchar(64),
 	`phone` varchar(20),
 	`school` varchar(100),
 	PRIMARY KEY (`actid`, `userid`)

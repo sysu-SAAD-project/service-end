@@ -53,11 +53,11 @@ type TokenInfo struct {
 
 // ActApplyInfo stores json format the front-end wanted
 type ActApplyInfo struct {
-	Actid 	 int  `json:"actid"`
-	UserName string `json:"username"`
-	Email 	 string `json:"email"`
-    Phone 	 string `json:"phone"`
-    School 	 string `json:"school"`
+	Actid     int    `json:"actid"`
+	UserName  string `json:"username"`
+	StudentId string `json:"studentid"`
+	Phone     string `json:"phone"`
+	School    string `json:"school"`
 }
 
 // ActApplyList defines the return format

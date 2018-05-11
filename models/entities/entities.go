@@ -33,12 +33,12 @@ type UserInfo struct {
 }
 
 type ActApplyInfo struct {
-	Actid    int    `xorm:"int notnull pk"`
-	UserId   string `xorm:"varchar(64) notnull pk"`
-	UserName string `xorm:"varchar(64)"`
-	Email    string `xorm:"varchar(100)"`
-	Phone    string `xorm:"varchar(20)"`
-	School   string `xorm:"varchar(100)"`
+	Actid     int    `xorm:"int notnull pk"`
+	UserId    string `xorm:"varchar(64) notnull pk"`
+	UserName  string `xorm:"varchar(64)"`
+	StudentId string `xorm:"varchar(64)"`
+	Phone     string `xorm:"varchar(20)"`
+	School    string `xorm:"varchar(100)"`
 }
 
 // TableName defines table name

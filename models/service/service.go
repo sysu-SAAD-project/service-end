@@ -32,14 +32,14 @@ func IsUserExist(openId string) bool {
 }
 
 // Check whether activity with actId exists
-func IsActExists(actId int) bool {
+func IsActExist(actId int) bool {
 	has, _ := entities.Engine.Table("activity").Where("id = ?", actId).Exist()
 	return has
 }
 
 // Check whether record with actId and userId exists
-func IsRecordExist(actId int, openId string) bool {
-	has, _ := entities.Engine.Table("actapply").Where("actid = ? and userid = ?", actId, openId).Exist()
+func IsRecordExist(actId int, studentId string) bool {
+	has, _ := entities.Engine.Table("actapply").Where("actid = ? and studentid = ?", actId, studentId).Exist()
 	return has
 }
 
@@ -51,10 +51,10 @@ func SaveUserInDB(openId string) {
 }
 
 // Save actapply with info...(ActApplyInfo) indb
-func SaveActApplyInDB(actId int, userId string, userName string, email string, phone string, school string) {
-	actApply := entities.ActApplyInfo{actId, userId, userName, email, phone, school}
-	entities.Engine.Table("actApply").InsertOne(&actApply)
-	return
+func SaveActApplyInDB(actId int, userId string, userName string, studentId string, phone string, school string) bool {
+	actApply := entities.ActApplyInfo{actId, userId, userName, studentId, phone, school}
+	_, err := entities.Engine.Table("actApply").InsertOne(&actApply)
+	return err == nil
 }
 
 // CheckUserID check if the user exists in the db --- yubei's part but I change user_id into userid
