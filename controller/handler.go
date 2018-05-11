@@ -319,12 +319,13 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Parse req form
 	r.ParseForm()
+	sactId := mux.Vars(r)["actId"]
 	var actId int
-	if len(r.Form["actId"]) <= 0 {
+	if len(sactId) <= 0 {
 		w.WriteHeader(400)
 		return
 	} else {
-		actId, err = strconv.Atoi(r.Form["actId"][0])
+		actId, err = strconv.Atoi(sactId)
 		if err != nil {
 			fmt.Fprint(os.Stderr, err)
 			w.WriteHeader(400)

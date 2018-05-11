@@ -61,7 +61,7 @@ func CheckToken(tokenString string) (int, string) {
 		expTime := claims["exp"]
 		openId := claims["sub"]
 
-		if (int64)(expTime.(float64)) > time.Now().Unix() {
+		if (int64)(expTime.(float64)) <= time.Now().Unix() {
 			return 1, openId.(string)
 		}
 		return 2, openId.(string)

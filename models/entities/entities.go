@@ -33,10 +33,10 @@ type UserInfo struct {
 }
 
 type ActApplyInfo struct {
-	Actid     int    `xorm:"int notnull pk"`
-	UserId    string `xorm:"varchar(64) notnull pk"`
-	UserName  string `xorm:"varchar(64)"`
-	StudentId string `xorm:"varchar(64)"`
+	Actid     int    `xorm:"int notnull pk 'actid'"`
+	UserId    string `xorm:"varchar(64) notnull pk 'userid'"`
+	UserName  string `xorm:"varchar(64) username"`
+	StudentId string `xorm:"varchar(64) studentid"`
 	Phone     string `xorm:"varchar(20)"`
 	School    string `xorm:"varchar(100)"`
 }

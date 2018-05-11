@@ -54,6 +54,9 @@ func SaveUserInDB(openId string) {
 func SaveActApplyInDB(actId int, userId string, userName string, studentId string, phone string, school string) bool {
 	actApply := entities.ActApplyInfo{actId, userId, userName, studentId, phone, school}
 	_, err := entities.Engine.Table("actApply").InsertOne(&actApply)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return err == nil
 }
 

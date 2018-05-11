@@ -29,9 +29,12 @@ func init() {
 	}
 	Engine = engine
 	if os.Getenv("DEVELOP") == "TRUE" {
-		Engine.Ping()
+		err := Engine.Ping()
 		Engine.ShowSQL(true)
 		Engine.Logger().SetLevel(core.LOG_DEBUG)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 
 	// Automatically sync table to db
