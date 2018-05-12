@@ -27,7 +27,7 @@ func GetActivityInfo(id int) (bool, entities.ActivityInfo) {
 
 // Check whether user with openId exists --- fix user_id into userid
 func IsUserExist(openId string) bool {
-	has, _ := entities.Engine.Table("user").Where("userid = ?", openId).Exist()
+	has, _ := entities.Engine.Table("user").Where("user_id = ?", openId).Exist()
 	return has
 }
 

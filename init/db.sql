@@ -22,11 +22,11 @@ CREATE TABLE `activity` (
 );
 
 CREATE TABLE `user` (
-	`userid` varchar(64) NOT NULL,
-	`username` varchar(64),
+	`user_id` varchar(64) NOT NULL,
+	`user_name` varchar(64),
 	`email` varchar(100),
 	`phone` varchar(20),
-	PRIMARY KEY (`userid`)
+	PRIMARY KEY (`user_id`)
 );
 
 CREATE TABLE `actapply` (
