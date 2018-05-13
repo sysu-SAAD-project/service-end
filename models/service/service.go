@@ -27,33 +27,33 @@ func GetActivityInfo(id int) (bool, entities.ActivityInfo) {
 
 // Check whether user with openId exists --- fix user_id into userid
 func IsUserExist(openId string) bool {
-	has, _ := entities.Engine.Table("user").Where("user_id = ?", openId).Exist()
+	has, _ := entities.Engine.Table("user").Where("user_id = ?", openId).Exist(&entities.UserInfo{})
 	return has
 }
 
 // Check whether activity with actId exists
 func IsActExist(actId int) bool {
-	has, _ := entities.Engine.Table("activity").Where("id = ?", actId).Exist()
+	has, _ := entities.Engine.Table("activity").Where("id = ?", actId).Exist(&entities.ActivityInfo{})
 	return has
 }
 
 // Check whether record with actId and userId exists
 func IsRecordExist(actId int, studentId string) bool {
-	has, _ := entities.Engine.Table("actapply").Where("actid = ? and studentid = ?", actId, studentId).Exist()
+	has, _ := entities.Engine.Table("actapply").Where("actid = ? and studentid = ?", actId, studentId).Exist(&entities.ActApplyInfo{})
 	return has
 }
 
 // Save user with openId in db
 func SaveUserInDB(openId string) {
 	user := entities.UserInfo{openId, "", "", ""}
-	entities.Engine.Table("user").InsertOne(&user)
+	entities.Engine.InsertOne(&user)
 	return
 }
 
 // Save actapply with info...(ActApplyInfo) indb
 func SaveActApplyInDB(actId int, userId string, userName string, studentId string, phone string, school string) bool {
 	actApply := entities.ActApplyInfo{actId, userId, userName, studentId, phone, school}
-	_, err := entities.Engine.Table("actapply").InsertOne(&actApply)
+	_, err := entities.Engine.InsertOne(&actApply)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -74,6 +74,6 @@ func CheckUserID(userid string) bool {
 // GetActApplyListByUserId return wanted activity apply list with given user openId
 func GetActApplyListByUserId(openId string) []entities.ActApplyInfo {
 	actApplyList := make([]entities.ActApplyInfo, 0)
-	entities.Engine.Table("actapply").Where("userid = ?", openId).Find(&actApplyList)
+	entities.Engine.Where("userid = ?", openId).Find(&actApplyList)
 	return actApplyList
 }

@@ -294,7 +294,6 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if token == "" {
-		fmt.Println(1)
 		// user doesn't login in
 		w.WriteHeader(401)
 		return
@@ -304,7 +303,6 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	// status code: 0 -> check error; 1 -> timeout; 2 -> ok
 	tokenStatusCode, userOpenId = CheckToken(token)
 	if tokenStatusCode != 2 {
-		fmt.Println(2)
 		// user token string error or timeout, need login in again
 		w.WriteHeader(401)
 		return
@@ -314,7 +312,6 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	// status code: false -> not exist; true -> exist
 	userStatusCode = dbservice.IsUserExist(userOpenId)
 	if userStatusCode == false {
-		fmt.Println(3)
 		// user not exist, need login in again
 		w.WriteHeader(401)
 		return
@@ -362,7 +359,7 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check phone validation
 	var phoneStatus bool = false
-	phoneStatus, _ = regexp.MatchString(`^(1[3|4|5|8][0-9]\d{8})$`, phone)
+	phoneStatus, _ = regexp.MatchString(`^(1[3|4|5|7|8][0-9]\d{8})$`, phone)
 	if phoneStatus == false {
 		w.WriteHeader(400)
 		return
