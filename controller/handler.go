@@ -294,6 +294,7 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if token == "" {
+		fmt.Println(1)
 		// user doesn't login in
 		w.WriteHeader(401)
 		return
@@ -303,6 +304,7 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	// status code: 0 -> check error; 1 -> timeout; 2 -> ok
 	tokenStatusCode, userOpenId = CheckToken(token)
 	if tokenStatusCode != 2 {
+		fmt.Println(2)
 		// user token string error or timeout, need login in again
 		w.WriteHeader(401)
 		return
@@ -312,6 +314,7 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	// status code: false -> not exist; true -> exist
 	userStatusCode = dbservice.IsUserExist(userOpenId)
 	if userStatusCode == false {
+		fmt.Println(3)
 		// user not exist, need login in again
 		w.WriteHeader(401)
 		return

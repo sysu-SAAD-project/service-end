@@ -53,7 +53,7 @@ func SaveUserInDB(openId string) {
 // Save actapply with info...(ActApplyInfo) indb
 func SaveActApplyInDB(actId int, userId string, userName string, studentId string, phone string, school string) bool {
 	actApply := entities.ActApplyInfo{actId, userId, userName, studentId, phone, school}
-	_, err := entities.Engine.Table("actApply").InsertOne(&actApply)
+	_, err := entities.Engine.Table("actapply").InsertOne(&actApply)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -74,6 +74,6 @@ func CheckUserID(userid string) bool {
 // GetActApplyListByUserId return wanted activity apply list with given user openId
 func GetActApplyListByUserId(openId string) []entities.ActApplyInfo {
 	actApplyList := make([]entities.ActApplyInfo, 0)
-	entities.Engine.Table("actApply").Where("userid = ?", openId).Find(&actApplyList)
+	entities.Engine.Table("actapply").Where("userid = ?", openId).Find(&actApplyList)
 	return actApplyList
 }

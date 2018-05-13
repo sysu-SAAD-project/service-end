@@ -51,5 +51,5 @@ func (u UserInfo) TableName() string {
 }
 
 func (u ActApplyInfo) TableName() string {
-	return "actApply"
+	return "actapply"
 }
