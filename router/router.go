@@ -18,6 +18,10 @@ func GetServer() *negroni.Negroni {
 	// Define static service
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(static))))
 
+	// Define generate token service
+	r.HandleFunc("/token", controller.TokenHandler).Methods("GET")
+	r.HandleFunc("/token/", controller.TokenHandler).Methods("GET")
+
 	// Define /act subrouter
 	act := r.PathPrefix("/act").Subrouter()
 	act.HandleFunc("", controller.ShowActivitiesListHandler).Methods("GET")

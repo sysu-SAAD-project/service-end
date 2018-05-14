@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"time"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	dbservice "github.com/sysu-saad-project/service-end/models/service"
 )
@@ -380,4 +381,23 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(200)
 	}
+}
+
+func TokenHandler(w http.ResponseWriter, r *http.Request) {
+	// expire in two weeks
+	var exp = time.Hour * 24 * 300
+	var hmacSampleSecret = []byte(secret)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub": "oXRoe0c7KDoAVGKOTYks_kaV2iQA",
+		"iat": time.Now().Unix(),
+		"exp": time.Now().Add(exp).Unix(),
+	})
+	// Sign and get the complete encoded token as a string using the secret
+	tokenString, err := token.SignedString(hmacSampleSecret)
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
+	w.Write([]byte(tokenString))
+	w.WriteHeader(200)
 }
