@@ -13,8 +13,15 @@ func GetActivityList(pageNum int) []entities.ActivityInfo {
 	// 0 stands for no pass
 	// 1 stands for pass
 	// 2 stands for not yet verified
-	entities.Engine.Desc("id").Limit(10, pageNum*10).Where("activity.verified = 1").Find(&activityList)
-	return activityList
+	entities.Engine.Desc("id").Where("activity.verified = 1").Find(&activityList)
+	from := pageNum * 10
+	if from >= len(activityList) {
+		return []entities.ActivityInfo{}
+	}
+	if from+10 > len(activityList) {
+		return activityList[from:]
+	}
+	return activityList[from : from+10]
 }
 
 // GetActivityInfo return wanted activity detail information which is given by id
