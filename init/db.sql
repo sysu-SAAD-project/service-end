@@ -3,7 +3,7 @@ CREATE TABLE `activity` (
 	`name` varchar(30) NOT NULL,
 	`start_time` DATETIME NOT NULL,
 	`end_time` DATETIME NOT NULL,
-	`campus` BINARY(4) NOT NULL,
+	`campus` INT NOT NULL,
 	`location` varchar(100) NOT NULL,
 	`enroll_condition` varchar(50) NOT NULL,
 	`sponsor` varchar(50) NOT NULL,
@@ -17,6 +17,24 @@ CREATE TABLE `activity` (
 	`poster` varchar(64),
 	`qrcode` varchar(64),
 	`email` varchar(255) NOT NULL,
-	`verified` BINARY(2) NOT NULL,
+	`verified` INT NOT NULL,
 	PRIMARY KEY (`id`)
-);
+) CHARACTER SET utf8;
+
+CREATE TABLE `user` (
+	`user_id` varchar(64) NOT NULL,
+	`user_name` varchar(64),
+	`email` varchar(100),
+	`phone` varchar(20),
+	PRIMARY KEY (`user_id`)
+) CHARACTER SET utf8;
+
+CREATE TABLE `actapply` (
+	`actid` INT NOT NULL,
+	`userid` varchar(64) NOT NULL,
+	`username` varchar(64),
+	`studentid` varchar(64),
+	`phone` varchar(20),
+	`school` varchar(100),
+	PRIMARY KEY (`actid`, `studentid`)
+) CHARACTER SET utf8;

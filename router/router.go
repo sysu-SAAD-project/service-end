@@ -18,11 +18,26 @@ func GetServer() *negroni.Negroni {
 	// Define static service
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(static))))
 
+	// Define generate token service
+	r.HandleFunc("/token", controller.TokenHandler).Methods("GET")
+	r.HandleFunc("/token/", controller.TokenHandler).Methods("GET")
+
 	// Define /act subrouter
 	act := r.PathPrefix("/act").Subrouter()
 	act.HandleFunc("", controller.ShowActivitiesListHandler).Methods("GET")
 	act.HandleFunc("/", controller.ShowActivitiesListHandler).Methods("GET")
-	act.HandleFunc("/{id:[0-9]+}", controller.ShowActivityDetailHandler).Methods("GET")
+	act.HandleFunc("/{id}", controller.ShowActivityDetailHandler).Methods("GET")
+
+	// Define /users subrouter
+	users := r.PathPrefix("/users").Subrouter()
+	users.HandleFunc("", controller.UserLoginHandler).Methods("POST")
+	users.HandleFunc("/", controller.UserLoginHandler).Methods("POST")
+
+	// Define /actApply subrouter
+	actApplys := r.PathPrefix("/actApplys").Subrouter()
+	actApplys.HandleFunc("", controller.ShowActApplysListHandler).Methods("GET")
+	actApplys.HandleFunc("/", controller.ShowActApplysListHandler).Methods("GET")
+	actApplys.HandleFunc("/{actId}", controller.UploadActApplyHandler).Methods("POST")
 
 	// Use classic server and return it
 	s := negroni.Classic()

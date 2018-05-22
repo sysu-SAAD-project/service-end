@@ -1,3 +1,4 @@
+![build status](https://travis-ci.org/sysu-SAAD-project/service-end.svg?branch=master)
 # 服务后端说明
 
 ## 文件结构
@@ -12,7 +13,7 @@
 
 - router/
 
-    Strore router information
+    Store router information
 
 - models/
 
@@ -29,3 +30,5 @@
 - controller/
 
     Store logic codes
+
+## 测试说明
