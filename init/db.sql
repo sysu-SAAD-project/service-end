@@ -38,3 +38,21 @@ CREATE TABLE `actapply` (
 	`school` varchar(100),
 	PRIMARY KEY (`actid`, `studentid`)
 ) CHARACTER SET utf8;
+
+CREATE TABLE `discussion` (
+	`disid` INT NOT NULL AUTO_INCREMENT ,
+	`userid` varchar(64) NOT NULL,
+	`type` INT NOT NULL,
+	`content` varchar(240) NOT NULL,
+	`time` DATETIME NOT NULL,
+	PRIMARY KEY (`disid`)
+) CHARACTER SET utf8;
+
+CREATE TABLE `comment` (
+	`cid` INT NOT NULL AUTO_INCREMENT,
+	`userid` varchar(64) NOT NULL,
+	`content` varchar(240) NOT NULL,
+	`time` DATETIME NOT NULL,
+	`precusor` INT NOT NULL,
+	PRIMARY KEY (`cid`)
+) CHARACTER SET utf8;
