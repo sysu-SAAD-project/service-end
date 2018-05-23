@@ -39,6 +39,11 @@ func GetServer() *negroni.Negroni {
 	actApplys.HandleFunc("/", controller.ShowActApplysListHandler).Methods("GET")
 	actApplys.HandleFunc("/{actId}", controller.UploadActApplyHandler).Methods("POST")
 
+	// Define /discus subrouter
+	discus := r.PathPrefix("/discus").Subrouter()
+	discus.HandleFunc("", controller.UploadDiscussionHandler).Methods("POST")
+	// discus.HandleFunc("/comments", controller.UploadCommentHandler).Methods("POST")
+
 	// Use classic server and return it
 	s := negroni.Classic()
 	s.UseHandler(r)

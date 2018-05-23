@@ -22,6 +22,8 @@ func init() {
 		DBPORT = ":" + DBPORT
 	}
 	url := fmt.Sprintf("root:root@tcp(%s%s)/activityplus?charset=utf8", DBADDRESS, DBPORT)
+	fmt.Println(url)
+	// url = fmt.Sprintf("root:root@tcp()127.0.0.1")
 	var err error
 	engine, err := xorm.NewEngine("mysql", url)
 	if err != nil {

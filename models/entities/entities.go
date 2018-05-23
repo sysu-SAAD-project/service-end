@@ -41,6 +41,14 @@ type ActApplyInfo struct {
 	School    string `xorm:"varchar(100)"`
 }
 
+type DiscussionInfo struct {
+	DisId   int    `xorm:"pk autoincr 'disid'"`
+	UserId  string `xorm:"varchar(64) notnull 'userid'"`
+	Type    int
+	Content string `xorm:"varchar(240) notnull 'content'"`
+	Time    *time.Time
+}
+
 // TableName defines table name
 func (u ActivityInfo) TableName() string {
 	return "activity"
@@ -52,4 +60,8 @@ func (u UserInfo) TableName() string {
 
 func (u ActApplyInfo) TableName() string {
 	return "actapply"
+}
+
+func (u DiscussionInfo) TableName() string {
+	return "discussion"
 }

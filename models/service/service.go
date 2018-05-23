@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/sysu-saad-project/service-end/models/entities"
 )
@@ -50,6 +51,12 @@ func IsRecordExist(actId int, studentId string) bool {
 	return has
 }
 
+// IsDiscussionExist check whether discussion exists
+func IsDiscussionExist(userOpenId string, mtype int, content string, mTime *time.Time) bool {
+	has, _ := entities.Engine.Table("discussion").Where("userid = ? and type = ? and content = ? and time = ?", userOpenId, mtype, content, mTime.Format("2006-01-02 15:04:05")).Exist(&entities.DiscussionInfo{})
+	return has
+}
+
 // Save user with openId in db
 func SaveUserInDB(openId string) {
 	user := entities.UserInfo{openId, "", "", ""}
@@ -61,6 +68,16 @@ func SaveUserInDB(openId string) {
 func SaveActApplyInDB(actId int, userId string, userName string, studentId string, phone string, school string) bool {
 	actApply := entities.ActApplyInfo{actId, userId, userName, studentId, phone, school}
 	_, err := entities.Engine.InsertOne(&actApply)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return err == nil
+}
+
+// Save discussion with info(DiscussionInfo) in db
+func SaveDiscussionInDB(userId string, mtype int, content string, mTime *time.Time) bool {
+	discussion := entities.DiscussionInfo{UserId: userId, Type: mtype, Content: content, Time: mTime}
+	_, err := entities.Engine.InsertOne(&discussion)
 	if err != nil {
 		fmt.Println(err)
 	}
