@@ -57,6 +57,19 @@ func IsDiscussionExist(userOpenId string, mtype int, content string, mTime *time
 	return has
 }
 
+// IsPrecusorExist check whether precusor exists
+func IsPrecusorExist(precusor int) bool {
+	fmt.Println(precusor)
+	has, _ := entities.Engine.Table("discussion").Where("disid = ?", precusor).Exist(&entities.DiscussionInfo{})
+	return has
+}
+
+// IsCommentExist check whether comment exists
+func IsCommentExist(userOpenId string, content string, mTime *time.Time, precusor int) bool {
+	has, _ := entities.Engine.Table("comment").Where("userid = ? and content = ? and time = ? and precusor = ?", userOpenId, content, mTime.Format("2006-01-02 15:04:05"), precusor).Exist(&entities.CommentInfo{})
+	return has
+}
+
 // Save user with openId in db
 func SaveUserInDB(openId string) {
 	user := entities.UserInfo{openId, "", "", ""}
@@ -78,6 +91,16 @@ func SaveActApplyInDB(actId int, userId string, userName string, studentId strin
 func SaveDiscussionInDB(userId string, mtype int, content string, mTime *time.Time) bool {
 	discussion := entities.DiscussionInfo{UserId: userId, Type: mtype, Content: content, Time: mTime}
 	_, err := entities.Engine.InsertOne(&discussion)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return err == nil
+}
+
+// Save comment with info(CommentInfo) in db
+func SaveCommentInDB(userId string, content string, mTime *time.Time, precusor int) bool {
+	comment := entities.CommentInfo{UserId: userId, Content: content, Time: mTime, Precusor: precusor}
+	_, err := entities.Engine.InsertOne(&comment)
 	if err != nil {
 		fmt.Println(err)
 	}

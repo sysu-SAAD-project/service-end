@@ -49,6 +49,14 @@ type DiscussionInfo struct {
 	Time    *time.Time
 }
 
+type CommentInfo struct {
+	Cid      int    `xorm:"pk autoincr 'cid'"`
+	UserId   string `xorm:"varchar(64) notnull 'userid'"`
+	Content  string `xorm:"varchar(240) notnull 'content'"`
+	Time     *time.Time
+	Precusor int
+}
+
 // TableName defines table name
 func (u ActivityInfo) TableName() string {
 	return "activity"
@@ -64,4 +72,8 @@ func (u ActApplyInfo) TableName() string {
 
 func (u DiscussionInfo) TableName() string {
 	return "discussion"
+}
+
+func (u CommentInfo) TableName() string {
+	return "comment"
 }

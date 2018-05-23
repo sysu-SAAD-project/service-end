@@ -510,3 +510,106 @@ func UploadDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 	}
 }
+
+// UploadCommentHandler post discussion and deposite into DB
+func UploadCommentHandler(w http.ResponseWriter, r *http.Request) {
+	// Check Authorization validation
+	var token, userOpenId string = "", ""
+	var tokenStatusCode int = -1
+	var userStatusCode bool = false
+	// var err error
+
+	if len(r.Header.Get("Authorization")) > 0 {
+		token = r.Header.Get("Authorization")
+	}
+
+	if token == "" {
+		// user doesn't login in
+		w.WriteHeader(401)
+		fmt.Println("User does not login in")
+		return
+	}
+
+	// Check token and return status code and openId
+	// status code: 0 -> check error; 1 -> timeout; 2 -> ok
+	tokenStatusCode, userOpenId = CheckToken(token)
+	if tokenStatusCode != 2 {
+		// user token string error or timeout, need login in again
+		w.WriteHeader(401)
+		fmt.Println("Need login in again")
+		return
+	}
+
+	// Check whether user exist and return status code
+	// status code: false -> not exist; true -> exist
+	userStatusCode = dbservice.IsUserExist(userOpenId)
+	if userStatusCode == false {
+		// user not exist, need login in again
+		w.WriteHeader(401)
+		fmt.Println("User not exist, need login in again")
+		return
+	}
+
+	// Parse req body
+	var reqBody map[string]interface{}
+	tmpBody, _ := ioutil.ReadAll(r.Body)
+	json.Unmarshal(tmpBody, &reqBody)
+	var content string = reqBody["content"].(string)
+	var mtime int64 = int64(reqBody["time"].(float64))
+	var precusor int = int(reqBody["precusor"].(float64))
+
+	fmt.Println(content)
+	fmt.Println(mtime)
+	fmt.Println(precusor)
+
+	var contentStatus bool = false
+	if len(content) < 240 && len(content) > 0 {
+		contentStatus = true
+	}
+	if contentStatus == false {
+		fmt.Println("contentStatus is false")
+		w.WriteHeader(400)
+		return
+	}
+
+	var timeStatus bool = false
+	currentTime := time.Unix(mtime/1000, 0)
+
+	fmt.Println(currentTime.Year())
+	fmt.Println(currentTime.Month())
+	fmt.Println(currentTime.Day())
+
+	// if currentTime.After(time.Date(上线时间)) {
+	//		timeStatus = true
+	// }
+	if currentTime.Before(time.Now()) {
+		timeStatus = true
+	}
+	if timeStatus == false {
+		w.WriteHeader(400)
+		fmt.Println("timeStatus is false")
+		return
+	}
+
+	precusorExist := dbservice.IsPrecusorExist(precusor)
+	if precusorExist == false {
+		w.WriteHeader(400)
+		fmt.Println("precusor do not exist")
+		return
+	}
+
+	commentExist := dbservice.IsCommentExist(userOpenId, content, &currentTime, precusor)
+	if commentExist == true {
+		w.WriteHeader(400)
+		fmt.Println("commentExist")
+		return
+	}
+
+	// Everyting is ok
+	ok := dbservice.SaveCommentInDB(userOpenId, content, &currentTime, precusor)
+	if !ok {
+		w.WriteHeader(500)
+	} else {
+		w.WriteHeader(200)
+	}
+}
