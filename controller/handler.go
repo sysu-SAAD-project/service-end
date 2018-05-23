@@ -613,3 +613,100 @@ func UploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 	}
 }
+
+func ListDiscussionHandler(w http.ResponseWriter, r *http.Request) {
+	// Get required page number, if not given, use the default value 1
+	r.ParseForm()
+	var pageNumber, disType string
+	if len(r.Form["type"]) <= 0 {
+		w.WriteHeader(400)
+		return
+	}
+	disType = r.Form["type"][0]
+	if len(r.Form["page"]) > 0 {
+		pageNumber = r.Form["page"][0]
+	} else {
+		pageNumber = "1"
+	}
+	intPageNum, err := strconv.Atoi(pageNumber)
+	if err != nil {
+		fmt.Fprint(os.Stderr, err)
+		w.WriteHeader(400)
+		return
+	}
+	intType, err := strconv.Atoi(disType)
+	if err != nil {
+		fmt.Fprint(os.Stderr, err)
+		w.WriteHeader(400)
+		return
+	}
+
+	// Judge if the passed param is valid
+	if intPageNum > 0 && intType > 0 {
+		discussList := dbservice.GetDiscussionList(intPageNum - 1, intType)
+		if len(discussList) <= 0 {
+			w.WriteHeader(204)
+			return
+		}
+		content := make([]DiscussInfo, 0)
+		for _, v := range discussList {
+			tmp := DiscussInfo{v.DisId, v.UserId, v.Type, v.Content, v.Time.UnixNano() / int64(time.Millisecond)}
+			content = append(content, tmp)
+		}
+		ret, err := json.Marshal(DiscussList{content})
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(500)
+			return
+		}
+		w.Write(ret)
+	}
+}
+
+func ListCommentsList(w http.ResponseWriter, r *http.Request) {
+	// Get required page number, if not given, use the default value 1
+	r.ParseForm()
+	var pageNumber, precusor string
+	if len(r.Form["type"]) <= 0 {
+		w.WriteHeader(400)
+		return
+	}
+	precusor = r.Form["precusor"][0]
+	if len(r.Form["page"]) > 0 {
+		pageNumber = r.Form["page"][0]
+	} else {
+		pageNumber = "1"
+	}
+	intPageNum, err := strconv.Atoi(pageNumber)
+	if err != nil {
+		fmt.Fprint(os.Stderr, err)
+		w.WriteHeader(400)
+		return
+	}
+	intPrecusor, err := strconv.Atoi(precusor)
+	if err != nil {
+		fmt.Fprint(os.Stderr, err)
+		w.WriteHeader(400)
+		return
+	}
+
+	if intPageNum > 0 && intPrecusor > 0 {
+		commentList := dbservice.GetCommentsList(intPageNum, intPrecusor)
+		if len(commentList) <= 0 {
+			w.WriteHeader(204)
+			return
+		}
+		content := make([]CommentInfo, 0)
+		for _, v := range commentList {
+			tmp := CommentInfo{v.Cid, v.UserId, v.Content, v.Time.UnixNano() / int64(time.Millisecond), v.Precusor}
+			content = append(content, tmp)
+		}
+		ret, err := json.Marshal(CommentList{content})
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(500)
+			return
+		}
+		w.Write(ret)
+	}
+}

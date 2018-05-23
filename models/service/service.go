@@ -124,3 +124,31 @@ func GetActApplyListByUserId(openId string) []entities.ActApplyInfo {
 	entities.Engine.Where("userid = ?", openId).Find(&actApplyList)
 	return actApplyList
 }
+
+// GetDiscussionList return required discussion list
+func GetDiscussionList(pageNum, tp int) []entities.DiscussionInfo {
+	discussionList := make([]entities.DiscussionInfo, 0)
+	entities.Engine.Where("type=?", tp).Desc("time").Find(&discussionList)
+	from := pageNum * 10
+	if from >= len(discussionList) {
+		return []entities.DiscussionInfo{}
+	}
+	if from+10 > len(discussionList) {
+		return discussionList[from:]
+	}
+	return discussionList[from : from+10]
+}
+
+// GetCommentsList gets needed comments list according to the precusor
+func GetCommentsList(pageNum, precusor int) []entities.CommentInfo {
+	CommentsInfo := make([]entities.CommentInfo, 0)
+	entities.Engine.Where("precusor=?", precusor).Find(&CommentsInfo)
+	from := pageNum * 10
+	if from >= len(CommentsInfo) {
+		return []entities.CommentInfo{}
+	}
+	if from+10 > len(CommentsInfo) {
+		return CommentsInfo[from:]
+	}
+	return CommentsInfo[from : from+10]
+}

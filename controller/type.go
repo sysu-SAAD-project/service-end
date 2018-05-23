@@ -64,3 +64,31 @@ type ActApplyInfo struct {
 type ActApplyList struct {
 	Content []ActApplyInfo `json:"content"`
 }
+
+// DiscussInfo contains info about a discuss
+type DiscussInfo struct {
+	ID       int    `json:"disid"`
+	UserName string `json:"username"`
+	Type     int    `json:"type"`
+	Content  string `json:"content"`
+	Time     int64  `json:"time"`
+}
+
+// DiscussList contains list of discussion information
+type DiscussList struct {
+	Content []DiscussInfo `json:"content"`
+}
+
+// CommentInfo contains comment information
+type CommentInfo struct {
+	ID       int    `json:"cid"`
+	UserName string `json:"username"`
+	Content  string `json:"content"`
+	Time     int64  `json:"time"`
+	Precusor int    `json:"precisor"`
+}
+
+// CommentList contains list of comments
+type CommentList struct {
+	Content []CommentInfo `json:"content"`
+}
