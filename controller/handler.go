@@ -12,6 +12,7 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
+	"github.com/sysu-saad-project/service-end/models/entities"
 	dbservice "github.com/sysu-saad-project/service-end/models/service"
 )
 
@@ -450,10 +451,6 @@ func UploadDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 	var content string = reqBody["content"].(string)
 	var mtime int64 = int64(reqBody["time"].(float64))
 
-	fmt.Println(mtype)
-	fmt.Println(content)
-	fmt.Println(mtime)
-
 	// check form
 	var typeStatus bool = false
 	if mtype == 2 || mtype == 4 || mtype == 8 ||
@@ -575,10 +572,6 @@ func UploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 	var timeStatus bool = false
 	currentTime := time.Unix(mtime/1000, 0)
 
-	fmt.Println(currentTime.Year())
-	fmt.Println(currentTime.Month())
-	fmt.Println(currentTime.Day())
-
 	// if currentTime.After(time.Date(上线时间)) {
 	//		timeStatus = true
 	// }
@@ -642,8 +635,45 @@ func ListDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Judge if the passed param is valid
-	if intPageNum > 0 && intType > 0 {
-		discussList := dbservice.GetDiscussionList(intPageNum - 1, intType)
+	if intPageNum > 0 && intType >= 2 {
+		// Judge which type is required
+		typeChoosed := []bool{false, false, false}
+		typeChoosed[0] = (intType>>3)&1 == 1
+		typeChoosed[1] = (intType>>2)&1 == 1
+		typeChoosed[2] = (intType>>1)&1 == 1
+		// Get required activity
+		iterate := dbservice.GetDiscussionIterate()
+		if iterate == nil {
+			w.WriteHeader(500)
+			return
+		}
+		defer iterate.Close()
+		discus := new(entities.DiscussionInfo)
+		discussList := make([]entities.DiscussionInfo, 0)
+		// Record current number
+		cnt := 0
+		// Judge every item
+		for iterate.Next() && len(discussList) < 10 {
+			cnt++;
+			if cnt < (intPageNum-1) * 10 {
+				continue
+			}
+			err := iterate.Scan(discus)
+			if err != nil {
+				w.WriteHeader(500)
+				return
+			}
+			var i uint
+			for i = 0; i < 3; i++ {
+				if typeChoosed[i] && typeChoosed[i] == ((discus.Type>>(3 - i)) & 1 == 1) {
+					break;
+				}
+			}
+			if i < 3 {
+				discussList = append(discussList, *discus)
+			}
+		}
+		// Return value
 		if len(discussList) <= 0 {
 			w.WriteHeader(204)
 			return
@@ -663,11 +693,11 @@ func ListDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func ListCommentsList(w http.ResponseWriter, r *http.Request) {
+func ListCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get required page number, if not given, use the default value 1
 	r.ParseForm()
 	var pageNumber, precusor string
-	if len(r.Form["type"]) <= 0 {
+	if len(r.Form["precusor"]) <= 0 {
 		w.WriteHeader(400)
 		return
 	}
@@ -691,7 +721,7 @@ func ListCommentsList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if intPageNum > 0 && intPrecusor > 0 {
-		commentList := dbservice.GetCommentsList(intPageNum, intPrecusor)
+		commentList := dbservice.GetCommentsList(intPageNum-1, intPrecusor)
 		if len(commentList) <= 0 {
 			w.WriteHeader(204)
 			return

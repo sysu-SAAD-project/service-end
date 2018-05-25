@@ -44,7 +44,7 @@ func GetServer() *negroni.Negroni {
 	discus.HandleFunc("", controller.UploadDiscussionHandler).Methods("POST")
 	discus.HandleFunc("/comments", controller.UploadCommentHandler).Methods("POST")
 	discus.HandleFunc("", controller.ListDiscussionHandler).Methods("GET")
-	discus.HandleFunc("/comments", controller.ListCommentsList).Methods("GET")
+	discus.HandleFunc("/comments", controller.ListCommentsHandler).Methods("GET")
 
 	// Use classic server and return it
 	s := negroni.Classic()

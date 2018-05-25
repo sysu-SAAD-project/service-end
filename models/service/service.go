@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/go-xorm/xorm"
 	"fmt"
 	"time"
 
@@ -151,4 +152,15 @@ func GetCommentsList(pageNum, precusor int) []entities.CommentInfo {
 		return CommentsInfo[from:]
 	}
 	return CommentsInfo[from : from+10]
+}
+
+// GetDiscussionIterate gets the iterate of all the db
+func GetDiscussionIterate() *xorm.Rows{
+	discussInfo := new(entities.DiscussionInfo)
+	iter, err := entities.Engine.Rows(discussInfo)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	return iter
 }
