@@ -212,7 +212,7 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(stringInfo)
 }
 
-// ShowActApplysListHandler parse userOpenId and return detailed activity apply list
+// ShowActApplysListHandler parse userOpenId and return activityList for specified user
 func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 	var token, userOpenId string = "", ""
 	var tokenStatusCode int = -1
@@ -225,6 +225,7 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 
 	if token == "" {
 		// user doesn't login in
+		fmt.Println("Token is empty")
 		w.WriteHeader(401)
 		return
 	}
@@ -234,6 +235,7 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 	tokenStatusCode, userOpenId = CheckToken(token)
 	if tokenStatusCode != 2 {
 		// user token string error or timeout, need login in again
+		fmt.Println("Token Error or Timeout")
 		w.WriteHeader(401)
 		return
 	}
@@ -243,43 +245,65 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 	userStatusCode = dbservice.IsUserExist(userOpenId)
 	if userStatusCode == false {
 		// user not exist, need login in again
+		fmt.Println("Please Login Again")
 		w.WriteHeader(401)
 		return
 	}
 
-	// Get activity apply list
-	actApplyList := dbservice.GetActApplyListByUserId(userOpenId)
-
-	// Change each element to the format that we need
-	infoArr := make([]ActApplyInfo, 0)
-	for i := 0; i < len(actApplyList); i++ {
-		tmp := ActApplyInfo{
-			Actid:     actApplyList[i].Actid,
-			UserName:  actApplyList[i].UserName,
-			StudentId: actApplyList[i].StudentId,
-			Phone:     actApplyList[i].Phone,
-			School:    actApplyList[i].School,
-		}
-		infoArr = append(infoArr, tmp)
+	// Get required page number, if not given, use the default value 1
+	r.ParseForm()
+	var pageNumber string
+	if len(r.Form["pageNum"]) > 0 {
+		pageNumber = r.Form["pageNum"][0]
+	} else {
+		pageNumber = "1"
 	}
-	returnList := ActApplyList{
-		Content: infoArr,
-	}
-
-	// Transfer it to json
-	stringList, err := json.Marshal(returnList)
+	intPageNum, err := strconv.Atoi(pageNumber)
 	if err != nil {
-		// error
 		fmt.Fprint(os.Stderr, err)
-		w.WriteHeader(500)
+		w.WriteHeader(400)
 		return
 	}
-	if len(actApplyList) <= 0 {
-		// user doesn't sign up any activity
-		w.WriteHeader(204)
+
+	// Judge if the passed param is valid
+	if intPageNum > 0 {
+		// Get activity list
+		activityList := dbservice.GetActivityListByUserId(intPageNum-1, userOpenId)
+
+		// Change each element to the format that we need
+		infoArr := make([]ActivityIntroduction, 0)
+		for i := 0; i < len(activityList); i++ {
+			tmp := ActivityIntroduction{
+				ID:        activityList[i].ID,
+				Name:      activityList[i].Name,
+				StartTime: activityList[i].StartTime.UnixNano() / int64(time.Millisecond),
+				EndTime:   activityList[i].EndTime.UnixNano() / int64(time.Millisecond),
+				Campus:    activityList[i].Campus,
+				Type:      activityList[i].Type,
+				Poster:    activityList[i].Poster,
+				Location:  activityList[i].Location,
+			}
+			tmp.Poster = GetPoster(tmp.Poster, tmp.Type)
+			infoArr = append(infoArr, tmp)
+		}
+		returnList := ActivityList{
+			Content: infoArr,
+		}
+
+		// Transfer it to json
+		stringList, err := json.Marshal(returnList)
+		if err != nil {
+			fmt.Fprint(os.Stderr, err)
+			w.WriteHeader(500)
+			return
+		}
+		if len(activityList) <= 0 {
+			w.WriteHeader(204)
+		} else {
+			w.Write(stringList)
+		}
 	} else {
-		// ok
-		w.Write(stringList)
+		w.WriteHeader(400)
 	}
 }
 
@@ -654,8 +678,8 @@ func ListDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 		cnt := 0
 		// Judge every item
 		for iterate.Next() && len(discussList) < 10 {
-			cnt++;
-			if cnt < (intPageNum-1) * 10 {
+			cnt++
+			if cnt < (intPageNum-1)*10 {
 				continue
 			}
 			err := iterate.Scan(discus)
@@ -665,8 +689,8 @@ func ListDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			var i uint
 			for i = 0; i < 3; i++ {
-				if typeChoosed[i] && typeChoosed[i] == ((discus.Type>>(3 - i)) & 1 == 1) {
-					break;
+				if typeChoosed[i] && typeChoosed[i] == ((discus.Type>>(3-i))&1 == 1) {
+					break
 				}
 			}
 			if i < 3 {

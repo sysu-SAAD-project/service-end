@@ -1,9 +1,10 @@
 package service
 
 import (
-	"github.com/go-xorm/xorm"
 	"fmt"
 	"time"
+
+	"github.com/go-xorm/xorm"
 
 	"github.com/sysu-saad-project/service-end/models/entities"
 )
@@ -16,6 +17,31 @@ func GetActivityList(pageNum int) []entities.ActivityInfo {
 	// 1 stands for pass
 	// 2 stands for not yet verified
 	entities.Engine.Desc("id").Where("activity.verified = 1").Find(&activityList)
+	from := pageNum * 10
+	if from >= len(activityList) {
+		return []entities.ActivityInfo{}
+	}
+	if from+10 > len(activityList) {
+		return activityList[from:]
+	}
+	return activityList[from : from+10]
+}
+
+// GetActivityListByUserId return wanted activity list with given page number and userOpenId
+func GetActivityListByUserId(pageNum int, userOpenId string) []entities.ActivityInfo {
+	activityList := make([]entities.ActivityInfo, 0)
+	actApplyList := GetActApplyListByUserId(userOpenId)
+	// Search verified activity
+	// 0 stands for no pass
+	// 1 stands for pass
+	// 2 stands for not yet verified
+	for i := 0; i < len(actApplyList); i++ {
+		ok, tmp := GetActivityInfo(actApplyList[i].ActId)
+		if !ok {
+			continue
+		}
+		activityList = append(activityList, tmp)
+	}
 	from := pageNum * 10
 	if from >= len(activityList) {
 		return []entities.ActivityInfo{}
@@ -155,7 +181,7 @@ func GetCommentsList(pageNum, precusor int) []entities.CommentInfo {
 }
 
 // GetDiscussionIterate gets the iterate of all the db
-func GetDiscussionIterate() *xorm.Rows{
+func GetDiscussionIterate() *xorm.Rows {
 	discussInfo := new(entities.DiscussionInfo)
 	iter, err := entities.Engine.Rows(discussInfo)
 	if err != nil {
