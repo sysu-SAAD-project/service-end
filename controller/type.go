@@ -5,6 +5,10 @@ type ActivityList struct {
 	Content []ActivityIntroduction `json:"content"`
 }
 
+type Activity_StudentIdList struct {
+	Content []Activity_StudentIdIntroduction `json:"content"`
+}
+
 // ErrorMessage defines error format
 type ErrorMessage struct {
 	Error   bool   `json:"error"`
@@ -21,6 +25,19 @@ type ActivityIntroduction struct {
 	Type      int    `json:"type"`
 	Poster    string `json:"poster"`
 	Location  string `json:"location"`
+}
+
+// ActivityIntroducation_StudentIdIntroduction
+type Activity_StudentIdIntroduction struct {
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	StartTime int64  `json:"startTime"`
+	EndTime   int64  `json:"endTime"`
+	Campus    int    `json:"campus"`
+	Type      int    `json:"type"`
+	Poster    string `json:"poster"`
+	Location  string `json:"location"`
+	StudentId string `json:"studentId"`
 }
 
 // ActivityInfo stores json format the front-end wanted
@@ -54,7 +71,7 @@ type TokenInfo struct {
 // ActApplyInfo stores json format the front-end wanted
 type ActApplyInfo struct {
 	ActId     int    `json:"actid"`
-	UserId 	  string `json:"userid"`
+	UserId    string `json:"userid"`
 	UserName  string `json:"username"`
 	StudentId string `json:"studentid"`
 	Phone     string `json:"phone"`

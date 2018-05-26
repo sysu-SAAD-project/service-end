@@ -271,9 +271,9 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 		activityList := dbservice.GetActivityListByUserId(intPageNum-1, userOpenId)
 
 		// Change each element to the format that we need
-		infoArr := make([]ActivityIntroduction, 0)
+		infoArr := make([]Activity_StudentIdIntroduction, 0)
 		for i := 0; i < len(activityList); i++ {
-			tmp := ActivityIntroduction{
+			tmp := Activity_StudentIdIntroduction{
 				ID:        activityList[i].ID,
 				Name:      activityList[i].Name,
 				StartTime: activityList[i].StartTime.UnixNano() / int64(time.Millisecond),
@@ -282,11 +282,12 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 				Type:      activityList[i].Type,
 				Poster:    activityList[i].Poster,
 				Location:  activityList[i].Location,
+				StudentId: activityList[i].StudentId,
 			}
 			tmp.Poster = GetPoster(tmp.Poster, tmp.Type)
 			infoArr = append(infoArr, tmp)
 		}
-		returnList := ActivityList{
+		returnList := Activity_StudentIdList{
 			Content: infoArr,
 		}
 

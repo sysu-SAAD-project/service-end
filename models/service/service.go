@@ -28,8 +28,8 @@ func GetActivityList(pageNum int) []entities.ActivityInfo {
 }
 
 // GetActivityListByUserId return wanted activity list with given page number and userOpenId
-func GetActivityListByUserId(pageNum int, userOpenId string) []entities.ActivityInfo {
-	activityList := make([]entities.ActivityInfo, 0)
+func GetActivityListByUserId(pageNum int, userOpenId string) []entities.Activity_StudentIdInfo {
+	activityList := make([]entities.Activity_StudentIdInfo, 0)
 	actApplyList := GetActApplyListByUserId(userOpenId)
 	// Search verified activity
 	// 0 stands for no pass
@@ -40,11 +40,21 @@ func GetActivityListByUserId(pageNum int, userOpenId string) []entities.Activity
 		if !ok {
 			continue
 		}
-		activityList = append(activityList, tmp)
+		activityList = append(activityList, entities.Activity_StudentIdInfo{
+			ID:        tmp.ID,
+			Name:      tmp.Name,
+			StartTime: tmp.StartTime,
+			EndTime:   tmp.EndTime,
+			Campus:    tmp.Campus,
+			Type:      tmp.Type,
+			Poster:    tmp.Poster,
+			Location:  tmp.Location,
+			StudentId: actApplyList[i].StudentId,
+		})
 	}
 	from := pageNum * 10
 	if from >= len(activityList) {
-		return []entities.ActivityInfo{}
+		return []entities.Activity_StudentIdInfo{}
 	}
 	if from+10 > len(activityList) {
 		return activityList[from:]
