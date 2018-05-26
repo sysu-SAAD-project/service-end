@@ -13,6 +13,12 @@ import (
 
 const secret = "sysu_activity_2018_activity_sysu"
 
+// Return error json string
+func Error(input *appError) []byte {
+	stringInfo, _ := json.Marshal(input)
+	return stringInfo
+}
+
 // GetPoster judge if the poster and returns accurate one with given type
 func GetPoster(raw string, actType int) string {
 	if len(raw) == 0 {

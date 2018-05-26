@@ -113,7 +113,7 @@ type CommentList struct {
 
 // Error Message Class
 type appError struct {
-	Error   error
-	Message string
-	Code    int
+	Code    int 	`json:"codeId"`
+	Message string  `json:"message"`
+	Error   error   `json:"error"`
 }
