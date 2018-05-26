@@ -17,10 +17,12 @@ import (
 	"github.com/sysu-saad-project/service-end/logs"
 )
 
-func logTests() {
+func logTests() *appError {
 	logs.Logger.Error("seelog error")
 	logs.Logger.Info("seelog info")
 	logs.Logger.Debug("seelog debug")
+	return &appError{"Record not found", 404}
+	// return &appError{err, "Can't display record", 500}
 }
 
 // ShowActivitiesListHandler get required page number and return detailed activity list

@@ -110,3 +110,9 @@ type CommentInfo struct {
 type CommentList struct {
 	Content []CommentInfo `json:"content"`
 }
+
+// Error Message Class
+type appError struct {
+	Message string
+	Code    int
+}
