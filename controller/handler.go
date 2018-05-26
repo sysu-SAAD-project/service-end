@@ -474,7 +474,6 @@ func UploadDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(tmpBody, &reqBody)
 	var mtype int = int(reqBody["type"].(float64))
 	var content string = reqBody["content"].(string)
-	var mtime int64 = int64(reqBody["time"].(float64))
 
 	// check form
 	var typeStatus bool = false
@@ -498,25 +497,7 @@ func UploadDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var timeStatus bool = false
-	currentTime := time.Unix(mtime/1000, 0)
-
-	fmt.Println(currentTime.Year())
-	fmt.Println(currentTime.Month())
-	fmt.Println(currentTime.Day())
-
-	// if currentTime.After(time.Date(上线时间)) {
-	//		timeStatus = true
-	// }
-	if currentTime.Before(time.Now()) {
-		timeStatus = true
-	}
-	if timeStatus == false {
-		w.WriteHeader(400)
-		fmt.Println("timeStatus is false")
-		return
-	}
-
+	currentTime := time.Now()
 	discussionExist := dbservice.IsDiscussionExist(userOpenId, mtype, content, &currentTime)
 	if discussionExist == true {
 		w.WriteHeader(400)
@@ -577,12 +558,7 @@ func UploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 	tmpBody, _ := ioutil.ReadAll(r.Body)
 	json.Unmarshal(tmpBody, &reqBody)
 	var content string = reqBody["content"].(string)
-	var mtime int64 = int64(reqBody["time"].(float64))
 	var precusor int = int(reqBody["precusor"].(float64))
-
-	fmt.Println(content)
-	fmt.Println(mtime)
-	fmt.Println(precusor)
 
 	var contentStatus bool = false
 	if len(content) < 240 && len(content) > 0 {
@@ -594,20 +570,7 @@ func UploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var timeStatus bool = false
-	currentTime := time.Unix(mtime/1000, 0)
-
-	// if currentTime.After(time.Date(上线时间)) {
-	//		timeStatus = true
-	// }
-	if currentTime.Before(time.Now()) {
-		timeStatus = true
-	}
-	if timeStatus == false {
-		w.WriteHeader(400)
-		fmt.Println("timeStatus is false")
-		return
-	}
+	currentTime := time.Now()
 
 	precusorExist := dbservice.IsPrecusorExist(precusor)
 	if precusorExist == false {
