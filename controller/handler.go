@@ -617,6 +617,7 @@ func UploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ListDiscussionHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
 	// Get required page number, if not given, use the default value 1
 	r.ParseForm()
 	var pageNumber, disType string
@@ -703,6 +704,7 @@ func ListDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ListCommentsHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
 	// Get required page number, if not given, use the default value 1
 	r.ParseForm()
 	var pageNumber, precusor string
