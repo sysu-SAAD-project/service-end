@@ -14,7 +14,14 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sysu-saad-project/service-end/models/entities"
 	dbservice "github.com/sysu-saad-project/service-end/models/service"
+	"github.com/sysu-saad-project/service-end/logs"
 )
+
+func logTests() {
+	logs.Logger.Error("seelog error")
+	logs.Logger.Info("seelog info")
+	logs.Logger.Debug("seelog debug")
+}
 
 // ShowActivitiesListHandler get required page number and return detailed activity list
 func ShowActivitiesListHandler(w http.ResponseWriter, r *http.Request) {
