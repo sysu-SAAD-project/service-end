@@ -478,7 +478,7 @@ func UploadDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 	// check form
 	var typeStatus bool = false
 	if mtype == 2 || mtype == 4 || mtype == 8 ||
-		mtype == 6 || mtype == 10 || mtype == 12 {
+		mtype == 6 || mtype == 10 || mtype == 12 || mtype == 14 {
 		typeStatus = true
 	}
 	if typeStatus == false {
