@@ -18,10 +18,11 @@ import (
 )
 
 func logTests() *appError {
+	var err error
 	logs.Logger.Error("seelog error")
 	logs.Logger.Info("seelog info")
 	logs.Logger.Debug("seelog debug")
-	return &appError{"Record not found", 404}
+	return &appError{err, "Record not found", 404}
 	// return &appError{err, "Can't display record", 500}
 }
 

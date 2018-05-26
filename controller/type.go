@@ -113,6 +113,7 @@ type CommentList struct {
 
 // Error Message Class
 type appError struct {
+	Error   error
 	Message string
 	Code    int
 }
