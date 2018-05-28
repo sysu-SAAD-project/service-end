@@ -22,7 +22,7 @@ func loadAppConfig() {
 			</filter>
 		</outputs>
 		<formats>
-			<format id="main" format="%Date/%Time [%LEV] %Msg%n"/> 
+			<format id="main" format="[%LEV] %Date/%Time :%n%Msg%n"/> 
 		</formats>
 	</seelog>
 `
