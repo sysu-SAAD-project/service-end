@@ -484,46 +484,7 @@ func TokenHandler(w http.ResponseWriter, r *http.Request) {
 
 // UploadDiscussionHandler post discussion and deposite into DB
 func UploadDiscussionHandler(w http.ResponseWriter, r *http.Request) {
-	// Check Authorization validation
-	var token, userOpenId string = "", ""
-	var tokenStatusCode int = -1
-	var userStatusCode bool = false
-	var err error
-
-	if len(r.Header.Get("Authorization")) > 0 {
-		token = r.Header.Get("Authorization")
-	}
-
-	if token == "" {
-		// user doesn't login in
-		w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
-		logs.Logger.Error("请求要求身份验证.")
-		// // fmt.Println("User does not login in")
-		return
-	}
-
-	// Check token and return status code and openId
-	// status code: 0 -> check error; 1 -> timeout; 2 -> ok
-	tokenStatusCode, userOpenId = CheckToken(token)
-	if tokenStatusCode != 2 {
-		// user token string error or timeout, need login in again
-		w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
-		logs.Logger.Error("请求要求身份验证.")
-		// // fmt.Println("Need login in again")
-		return
-	}
-
-	// Check whether user exist and return status code
-	// status code: false -> not exist; true -> exist
-	userStatusCode = dbservice.IsUserExist(userOpenId)
-	if userStatusCode == false {
-		// user not exist, need login in again
-		w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
-		logs.Logger.Error("请求要求身份验证.")
-		// // fmt.Println("User not exist, need login in again")
-		return
-	}
-
+	userOpenId := r.Header.Get("X-Account")
 	// Parse req body
 	var reqBody map[string]interface{}
 	tmpBody, _ := ioutil.ReadAll(r.Body)
@@ -538,7 +499,7 @@ func UploadDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 		typeStatus = true
 	}
 	if typeStatus == false {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
 		logs.Logger.Error("服务器不理解请求的语法.")
 		// // fmt.Println("typeStatus is false")
 		return
@@ -550,7 +511,7 @@ func UploadDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if contentStatus == false {
 		// // fmt.Println("contentStatus is false")
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
 		logs.Logger.Error("服务器不理解请求的语法.")
 		return
 	}
@@ -558,7 +519,7 @@ func UploadDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 	currentTime := time.Now()
 	discussionExist := dbservice.IsDiscussionExist(userOpenId, mtype, content, &currentTime)
 	if discussionExist == true {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
 		logs.Logger.Error("服务器不理解请求的语法.")
 		// // fmt.Println("discussionExist")
 		return
@@ -567,7 +528,7 @@ func UploadDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 	// Everyting is ok
 	ok := dbservice.SaveDiscussionInDB(userOpenId, mtype, content, &currentTime)
 	if !ok {
-		w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
+		w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", nil}))
 		logs.Logger.Error("服务器遇到错误，无法完成请求.")
 	} else {
 		w.WriteHeader(200)
@@ -577,46 +538,7 @@ func UploadDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 
 // UploadCommentHandler post discussion and deposite into DB
 func UploadCommentHandler(w http.ResponseWriter, r *http.Request) {
-	// Check Authorization validation
-	var token, userOpenId string = "", ""
-	var tokenStatusCode int = -1
-	var userStatusCode bool = false
-	var err error
-
-	if len(r.Header.Get("Authorization")) > 0 {
-		token = r.Header.Get("Authorization")
-	}
-
-	if token == "" {
-		// user doesn't login in
-		w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
-		logs.Logger.Error("请求要求身份验证.")
-		// // fmt.Println("User does not login in")
-		return
-	}
-
-	// Check token and return status code and openId
-	// status code: 0 -> check error; 1 -> timeout; 2 -> ok
-	tokenStatusCode, userOpenId = CheckToken(token)
-	if tokenStatusCode != 2 {
-		// user token string error or timeout, need login in again
-		w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
-		logs.Logger.Error("请求要求身份验证.")
-		// fmt.Println("Need login in again")
-		return
-	}
-
-	// Check whether user exist and return status code
-	// status code: false -> not exist; true -> exist
-	userStatusCode = dbservice.IsUserExist(userOpenId)
-	if userStatusCode == false {
-		// user not exist, need login in again
-		w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
-		logs.Logger.Error("请求要求身份验证.")
-		// fmt.Println("User not exist, need login in again")
-		return
-	}
-
+	userOpenId := r.Header.Get("X-Account")
 	// Parse req body
 	var reqBody map[string]interface{}
 	tmpBody, _ := ioutil.ReadAll(r.Body)
@@ -630,7 +552,7 @@ func UploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if contentStatus == false {
 		// fmt.Println("contentStatus is false")
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
 		logs.Logger.Error("服务器不理解请求的语法.")
 		return
 	}
@@ -639,7 +561,7 @@ func UploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	precusorExist := dbservice.IsPrecusorExist(precusor)
 	if precusorExist == false {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
 		logs.Logger.Error("服务器不理解请求的语法.")
 		// fmt.Println("precusor do not exist")
 		return
@@ -647,7 +569,7 @@ func UploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	commentExist := dbservice.IsCommentExist(userOpenId, content, &currentTime, precusor)
 	if commentExist == true {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
 		logs.Logger.Error("服务器不理解请求的语法.")
 		// fmt.Println("commentExist")
 		return
@@ -656,7 +578,7 @@ func UploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 	// Everyting is ok
 	ok := dbservice.SaveCommentInDB(userOpenId, content, &currentTime, precusor)
 	if !ok {
-		w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
+		w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", nil}))
 		logs.Logger.Error("服务器遇到错误，无法完成请求.")
 	} else {
 		w.WriteHeader(200)
@@ -668,16 +590,10 @@ func ListDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	// Get required page number, if not given, use the default value 1
 	r.ParseForm()
-	var pageNumber, disType string
-	if len(r.Form["type"]) <= 0 {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-		logs.Logger.Error("服务器不理解请求的语法.")
-		return
-	}
-	disType = r.Form["type"][0]
-	if len(r.Form["page"]) > 0 {
-		pageNumber = r.Form["page"][0]
-	} else {
+	header := GetRequestHeader([]string{"type", "page"}, r)
+	pageNumber := header[1]
+	disType := header[0]
+	if len(pageNumber) == 0 {
 		pageNumber = "1"
 	}
 	intPageNum, err := strconv.Atoi(pageNumber)
@@ -698,10 +614,7 @@ func ListDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 	// Judge if the passed param is valid
 	if intPageNum > 0 && intType >= 2 {
 		// Judge which type is required
-		typeChoosed := []bool{false, false, false}
-		typeChoosed[0] = (intType>>3)&1 == 1
-		typeChoosed[1] = (intType>>2)&1 == 1
-		typeChoosed[2] = (intType>>1)&1 == 1
+		typeChoosed := GetType(intType, 3)
 		// Get required activity
 		iterate := dbservice.GetDiscussionIterate()
 		if iterate == nil {

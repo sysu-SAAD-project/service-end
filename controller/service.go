@@ -121,3 +121,22 @@ func GenerateJWT(openId string) (string, error) {
 	tokenString, err := token.SignedString(hmacSampleSecret)
 	return tokenString, err
 }
+
+// GetRequestHeader get data from header
+func GetRequestHeader(h []string, r *http.Request) []string {
+	ret := make([]string, 0)
+	for _, key := range h {
+		v := r.FormValue(key)
+		ret = append(ret, v)
+	}
+	return ret
+}
+
+func GetType(data int, num uint) []bool {
+	typeArr := make([]bool, num)
+	var i uint
+	for i = 0; i < num; i++ {
+		typeArr[i] = (data>>uint(num-i))&1 == 1
+	}
+	return typeArr
+}
