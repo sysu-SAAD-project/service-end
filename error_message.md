@@ -1,8 +1,14 @@
-请后端每次返回错误信息时，按照以下示例调用：
+请后端每次向前端返回错误信息时，按照以下示例调用：
 ```
-    w.Write(Error(&appError{错误码, "错误信息(+附加详细信息)", error类}))
-    logs.Logger.Error("错误信息(+附加详细信息)")
+    w.Write(Error(&appError{错误码, "错误信息(+附加详细信息)", err}))
 ```
+
+请后端每次需要日志记录时，按照以下示例调用：
+```
+	logs.Logger.Error(logError{r.URL.String(), "自定义的错误信息", err}) // 无err可为nil
+    logs.Logger.Info(logError{r.URL.String(), "服务端正常", nil})
+```
+
 
 | 错误码     | 错误消息    |
 |------------| ---------  |

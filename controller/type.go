@@ -117,3 +117,10 @@ type appError struct {
 	Message string  `json:"message"`
 	Error   error   `json:"error"`
 }
+
+// Log Error Message Class
+type logError struct {
+	Api     string 	`json:"api"`
+	Message string  `json:"message"`
+	Error   error   `json:"error"`
+}
