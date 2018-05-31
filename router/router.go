@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/sysu-saad-project/service-end/controller"
+	"github.com/sysu-saad-project/service-end/middleware"
 	"github.com/urfave/negroni"
 )
 
@@ -48,6 +49,7 @@ func GetServer() *negroni.Negroni {
 
 	// Use classic server and return it
 	s := negroni.Classic()
+	s.Use(negroni.HandlerFunc(middleware.ServeHTTP))
 	s.UseHandler(r)
 	return s
 }

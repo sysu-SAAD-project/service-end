@@ -12,9 +12,9 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
+	"github.com/sysu-saad-project/service-end/logs"
 	"github.com/sysu-saad-project/service-end/models/entities"
 	dbservice "github.com/sysu-saad-project/service-end/models/service"
-	"github.com/sysu-saad-project/service-end/logs"
 )
 
 func logTests() []byte {
@@ -485,6 +485,7 @@ func TokenHandler(w http.ResponseWriter, r *http.Request) {
 // UploadDiscussionHandler post discussion and deposite into DB
 func UploadDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 	userOpenId := r.Header.Get("X-Account")
+	fmt.Println("Discussion : X-Account : " + userOpenId)
 	// Parse req body
 	var reqBody map[string]interface{}
 	tmpBody, _ := ioutil.ReadAll(r.Body)
@@ -539,6 +540,7 @@ func UploadDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 // UploadCommentHandler post discussion and deposite into DB
 func UploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 	userOpenId := r.Header.Get("X-Account")
+	fmt.Println("Comment : X-Account : " + userOpenId)
 	// Parse req body
 	var reqBody map[string]interface{}
 	tmpBody, _ := ioutil.ReadAll(r.Body)

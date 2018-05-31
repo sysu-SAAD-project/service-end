@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"strings"
 	"net/http"
+	"strings"
 
 	"github.com/sysu-saad-project/service-end/controller"
 	"github.com/sysu-saad-project/service-end/models/service"
@@ -14,9 +14,8 @@ import (
 // Timeout authorization will be set to 0
 // Suppose that only manager can access the api
 // User level and account name will be set
-type ValidUserMiddleWare struct{}
 
-func (v ValidUserMiddleWare) ServeHTTP(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+func ServeHTTP(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	role := 0
 	// Read authorization from header
 	r.Header.Del("X-Role")
