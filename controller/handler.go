@@ -42,8 +42,10 @@ func ShowActivitiesListHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// fmt.Fprint(os.Stderr, err)
 		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-		w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+		// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+		fmt.Println(err)
+		w.WriteHeader(400)
 		return
 	}
 
@@ -75,19 +77,24 @@ func ShowActivitiesListHandler(w http.ResponseWriter, r *http.Request) {
 		// Transfer it to json
 		stringList, err := json.Marshal(returnList)
 		if err != nil {
-			w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
-			logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+			// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
+			// logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+			fmt.Println(err)
+			w.WriteHeader(500)
 			return
 		}
 		if len(activityList) <= 0 {
-			w.Write(Error(&appError{204, "服务器成功处理了请求，但没有返回任何内容.", err}))
-			logs.Logger.Info(logError{r.URL.String(), "服务端正常", nil})
+			// w.Write(Error(&appError{204, "服务器成功处理了请求，但没有返回任何内容.", err}))
+			// logs.Logger.Info(logError{r.URL.String(), "服务端正常", nil})
+			w.WriteHeader(204)
+			return
 		} else {
 			w.Write(stringList)
 		}
 	} else {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法: pageNum <= 0.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法: pageNum <= 0.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		w.WriteHeader(400)
 	}
 }
 
@@ -98,8 +105,10 @@ func ShowActivityDetailHandler(w http.ResponseWriter, r *http.Request) {
 	intID, err := strconv.Atoi(id)
 	if err != nil {
 		// fmt.Fprint(os.Stderr, err)
-		w.Write(Error(&appError{400, "服务器不理解请求的语法: id not integer.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法: id not integer.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		fmt.Println(err)
+		w.WriteHeader(400)
 		return
 	}
 
@@ -134,18 +143,22 @@ func ShowActivityDetailHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				// fmt.Fprint(os.Stderr, err)
 				// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
-				w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
-				logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+				// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
+				// logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+				fmt.Println(err)
+				fmt.Println(500)
 				return
 			}
 			w.Write(stringInfo)
 		} else {
-			w.Write(Error(&appError{204, "服务器成功处理了请求，但没有返回任何内容.", err}))
-			logs.Logger.Info(logError{r.URL.String(), "服务端正常", nil})
+			// w.Write(Error(&appError{204, "服务器成功处理了请求，但没有返回任何内容.", err}))
+			// logs.Logger.Info(logError{r.URL.String(), "服务端正常", nil})
+			w.WriteHeader(204)
 		}
 	} else {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法: id <= 0.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法: id <= 0.", err})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法: id <= 0.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法: id <= 0.", err})
+		w.WriteHeader(400)
 	}
 }
 
@@ -180,8 +193,9 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 			jwt = token
 		} else if tokenStatusCode == 0 {
 			// token check error
-			w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
-			logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+			// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
+			// logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+			w.WriteHeader(400)
 			return
 		}
 	}
@@ -198,8 +212,10 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			// fmt.Fprint(os.Stderr, err)
 			// w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-			w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
-			logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+			// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
+			// logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+			fmt.Println(err)
+			w.WriteHeader(500)
 			return
 		}
 		// token ok but user not exists, maybe mistake delete
@@ -222,8 +238,10 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			// fmt.Fprint(os.Stderr, err)
 			// w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-			w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
-			logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+			// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
+			// logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+			fmt.Println(err)
+			w.WriteHeader(500)
 			return
 		}
 	}
@@ -233,8 +251,10 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// fmt.Fprint(os.Stderr, err)
 		// w.Write(Error(&appError{400, "服务器遇到错误，无法完成请求.", err}))
-		w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+		// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+		fmt.Println(err)
+		w.WriteHeader(500)
 		return
 	}
 	w.Write(stringInfo)
@@ -255,8 +275,9 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 		// user doesn't login in
 		// // fmt.Println("Token is empty")
 		// w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
-		w.Write(Error(&appError{401, "请求要求身份验证: Token is empty.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "请求要求身份验证: Token is empty.", err})
+		// w.Write(Error(&appError{401, "请求要求身份验证: Token is empty.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "请求要求身份验证: Token is empty.", err})
+		fmt.Println(401)
 		return
 	}
 
@@ -267,8 +288,9 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 		// user token string error or timeout, need login in again
 		// // fmt.Println("Token Error or Timeout")
 		// w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
-		w.Write(Error(&appError{401, "请求要求身份验证: Token Error or Timeout.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "请求要求身份验证.", err})
+		// w.Write(Error(&appError{401, "请求要求身份验证: Token Error or Timeout.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "请求要求身份验证.", err})
+		w.WriteHeader(401)
 		return
 	}
 
@@ -279,8 +301,9 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 		// user not exist, need login in again
 		// // fmt.Println("Please Login Again")
 		// w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
-		w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "请求要求身份验证.", err})
+		// w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "请求要求身份验证.", err})
+		w.WriteHeader(401)
 		return
 	}
 
@@ -296,8 +319,10 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// fmt.Fprint(os.Stderr, err)
 		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-		w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+		// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+		fmt.Println(err)
+		w.WriteHeader(400)
 		return
 	}
 
@@ -332,19 +357,23 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			// fmt.Fprint(os.Stderr, err)
 			// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
-			w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
-			logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+			// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
+			// logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+			fmt.Println(err)
+			w.WriteHeader(500)
 			return
 		}
 		if len(activityList) <= 0 {
-			w.Write(Error(&appError{204, "服务器成功处理了请求，但没有返回任何内容.", err}))
-			logs.Logger.Info(logError{r.URL.String(), "服务端正常", nil})
+			// w.Write(Error(&appError{204, "服务器成功处理了请求，但没有返回任何内容.", err}))
+			// logs.Logger.Info(logError{r.URL.String(), "服务端正常", nil})
+			w.WriteHeader(204)
 		} else {
 			w.Write(stringList)
 		}
 	} else {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		w.WriteHeader(400)
 	}
 }
 
@@ -362,8 +391,9 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 
 	if token == "" {
 		// user doesn't login in
-		w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "请求要求身份验证: Please Login Again.", err})
+		// w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "请求要求身份验证: Please Login Again.", err})
+		w.WriteHeader(401)
 		return
 	}
 
@@ -372,8 +402,9 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	tokenStatusCode, userOpenId = CheckToken(token)
 	if tokenStatusCode != 2 {
 		// user token string error or timeout, need login in again
-		w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "请求要求身份验证: Please Login Again.", err})
+		// w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "请求要求身份验证: Please Login Again.", err})
+		w.WriteHeader(401)
 		return
 	}
 
@@ -382,8 +413,9 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	userStatusCode = dbservice.IsUserExist(userOpenId)
 	if userStatusCode == false {
 		// user not exist, need login in again
-		w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "请求要求身份验证: Please Login Again.", err})
+		// w.Write(Error(&appError{401, "请求要求身份验证: Please Login Again.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "请求要求身份验证: Please Login Again.", err})
+		w.WriteHeader(401)
 		return
 	}
 
@@ -392,15 +424,18 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	sactId := mux.Vars(r)["actId"]
 	var actId int
 	if len(sactId) <= 0 {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		w.WriteHeader(400)
 		return
 	} else {
 		actId, err = strconv.Atoi(sactId)
 		if err != nil {
 			// fmt.Fprint(os.Stderr, err)
-			w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-			logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+			// w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+			// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+			fmt.Println(err)
+			w.WriteHeader(400)
 		}
 	}
 
@@ -417,8 +452,9 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	var actExists bool = false
 	actExists = dbservice.IsActExist(actId)
 	if actExists == false {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		w.WriteHeader(400)
 		return
 	}
 
@@ -426,8 +462,9 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	var studentIdStatus bool = false
 	studentIdStatus, _ = regexp.MatchString("^[1-9][0-9]{7}$", studentId)
 	if studentIdStatus == false {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		w.WriteHeader(400)
 		return
 	}
 
@@ -435,8 +472,9 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	var phoneStatus bool = false
 	phoneStatus, _ = regexp.MatchString(`^(1[3|4|5|7|8][0-9]\d{8})$`, phone)
 	if phoneStatus == false {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		w.WriteHeader(400)
 		return
 	}
 
@@ -444,16 +482,18 @@ func UploadActApplyHandler(w http.ResponseWriter, r *http.Request) {
 	var recordExists bool = false
 	recordExists = dbservice.IsRecordExist(actId, studentId)
 	if recordExists == true {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		w.WriteHeader(400)
 		return
 	}
 
 	// Everything is ok
 	ok := dbservice.SaveActApplyInDB(actId, userOpenId, userName, studentId, phone, school)
 	if !ok {
-		w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+		// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+		w.WriteHeader(500)
 	} else {
 		w.WriteHeader(200)
 		logs.Logger.Info(logError{r.URL.String(), "服务端正常", nil})
@@ -500,9 +540,10 @@ func UploadDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 		typeStatus = true
 	}
 	if typeStatus == false {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", nil})
-		// // fmt.Println("typeStatus is false")
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", nil})
+		// fmt.Println("typeStatus is false")
+		w.WriteHeader(400)
 		return
 	}
 
@@ -512,25 +553,28 @@ func UploadDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if contentStatus == false {
 		// // fmt.Println("contentStatus is false")
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", nil})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", nil})
+		w.WriteHeader(400)
 		return
 	}
 
 	currentTime := time.Now()
 	discussionExist := dbservice.IsDiscussionExist(userOpenId, mtype, content, &currentTime)
 	if discussionExist == true {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", nil})
-		// // fmt.Println("discussionExist")
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", nil})
+		// fmt.Println("discussionExist")
+		w.WriteHeader(400)
 		return
 	}
 
 	// Everyting is ok
 	ok := dbservice.SaveDiscussionInDB(userOpenId, mtype, content, &currentTime)
 	if !ok {
-		w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", nil}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", nil})
+		// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", nil}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", nil})
+		w.WriteHeader(500)
 	} else {
 		w.WriteHeader(200)
 		logs.Logger.Info(logError{r.URL.String(), "服务端正常", nil})
@@ -554,8 +598,9 @@ func UploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if contentStatus == false {
 		// fmt.Println("contentStatus is false")
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", nil})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", nil})
+		w.WriteHeader(400)
 		return
 	}
 
@@ -563,25 +608,28 @@ func UploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	precusorExist := dbservice.IsPrecusorExist(precusor)
 	if precusorExist == false {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", nil})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", nil})
 		// fmt.Println("precusor do not exist")
+		w.WriteHeader(400)		
 		return
 	}
 
 	commentExist := dbservice.IsCommentExist(userOpenId, content, &currentTime, precusor)
 	if commentExist == true {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", nil})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", nil}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", nil})
 		// fmt.Println("commentExist")
+		w.WriteHeader(400)		
 		return
 	}
 
 	// Everyting is ok
 	ok := dbservice.SaveCommentInDB(userOpenId, content, &currentTime, precusor)
 	if !ok {
-		w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", nil}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", nil})
+		// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", nil}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", nil})
+		w.WriteHeader(500)
 	} else {
 		w.WriteHeader(200)
 		logs.Logger.Info(logError{r.URL.String(), "服务端正常", nil})
@@ -601,15 +649,17 @@ func ListDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 	intPageNum, err := strconv.Atoi(pageNumber)
 	if err != nil {
 		fmt.Fprint(os.Stderr, err)
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		w.WriteHeader(400)		
 		return
 	}
 	intType, err := strconv.Atoi(disType)
 	if err != nil {
 		fmt.Fprint(os.Stderr, err)
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		w.WriteHeader(400)		
 		return
 	}
 
@@ -620,8 +670,9 @@ func ListDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 		// Get required activity
 		iterate := dbservice.GetDiscussionIterate()
 		if iterate == nil {
-			w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
-			logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+			// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
+			// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+			w.WriteHeader(500)
 			return
 		}
 		defer iterate.Close()
@@ -637,8 +688,9 @@ func ListDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			err := iterate.Scan(discus)
 			if err != nil {
-				w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
-				logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+				// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
+				// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+				w.WriteHeader(500)
 				return
 			}
 			var i uint
@@ -664,8 +716,9 @@ func ListDiscussionHandler(w http.ResponseWriter, r *http.Request) {
 		ret, err := json.Marshal(DiscussList{content})
 		if err != nil {
 			// fmt.Println(err)
-			w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
-			logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+			// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
+			// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+			w.WriteHeader(500)
 			return
 		}
 		w.Write(ret)
@@ -678,8 +731,9 @@ func ListCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	var pageNumber, precusor string
 	if len(r.Form["precusor"]) <= 0 {
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		w.WriteHeader(400)		
 		return
 	}
 	precusor = r.Form["precusor"][0]
@@ -691,15 +745,17 @@ func ListCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	intPageNum, err := strconv.Atoi(pageNumber)
 	if err != nil {
 		fmt.Fprint(os.Stderr, err)
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		w.WriteHeader(400)		
 		return
 	}
 	intPrecusor, err := strconv.Atoi(precusor)
 	if err != nil {
 		fmt.Fprint(os.Stderr, err)
-		w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
-		logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		// w.Write(Error(&appError{400, "服务器不理解请求的语法.", err}))
+		// logs.Logger.Error(logError{r.URL.String(), "服务器不理解请求的语法.", err})
+		w.WriteHeader(400)		
 		return
 	}
 
@@ -717,8 +773,9 @@ func ListCommentsHandler(w http.ResponseWriter, r *http.Request) {
 		ret, err := json.Marshal(CommentList{content})
 		if err != nil {
 			// fmt.Println(err)
-			w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
-			logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+			// w.Write(Error(&appError{500, "服务器遇到错误，无法完成请求.", err}))
+			// logs.Logger.Error(logError{r.URL.String(), "服务器遇到错误，无法完成请求.", err})
+			w.WriteHeader(400)		
 			return
 		}
 		w.Write(ret)
