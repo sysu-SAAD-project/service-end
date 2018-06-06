@@ -33,8 +33,8 @@ func ShowActivitiesListHandler(w http.ResponseWriter, r *http.Request) {
 	// Get required page number, if not given, use the default value 1
 	r.ParseForm()
 	var pageNumber string
-	if len(r.Form["pageNum"]) > 0 {
-		pageNumber = r.Form["pageNum"][0]
+	if len(r.Form["page"]) > 0 {
+		pageNumber = r.Form["page"][0]
 	} else {
 		pageNumber = "1"
 	}
@@ -287,8 +287,8 @@ func ShowActApplysListHandler(w http.ResponseWriter, r *http.Request) {
 	// Get required page number, if not given, use the default value 1
 	r.ParseForm()
 	var pageNumber string
-	if len(r.Form["pageNum"]) > 0 {
-		pageNumber = r.Form["pageNum"][0]
+	if len(r.Form["page"]) > 0 {
+		pageNumber = r.Form["page"][0]
 	} else {
 		pageNumber = "1"
 	}
